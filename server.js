@@ -19,7 +19,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const db = mysql.createConnection({
     host    : 'localhost',
     user    : 'root',
-    password: '123456',
+    password: 'password',
     database: 'docbrowser'
 });
 
