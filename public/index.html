@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Project Document Browser</title>
+  <style>
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Times New Roman', serif;
+      font-size: 14px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── TOP BAR ── */
+    .top-bar {
+      background: #f0f0f0;
+      border-bottom: 1px solid #ccc;
+      padding: 10px 20px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    /* ── MAIN LAYOUT ── */
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── LEFT PANEL ── */
+    .left-panel {
+      width: 200px;
+      background: #e8e8e8;
+      border-right: 2px solid #ccc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 10px;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .left-panel button {
+      width: 160px;
+      padding: 8px 10px;
+      font-family: 'Times New Roman', serif;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      background: #d4d4d4;
+      border: 1px solid #999;
+    }
+
+    .left-panel button:hover { background: #c0c0c0; }
+    .left-panel button.active-btn {
+      background: #b0b0b0;
+      border: 2px solid #666;
+    }
+
+    /* ── RIGHT PANEL ── */
+    .right-panel {
+      flex: 1;
+      overflow-y: auto;
+      background: white;
+    }
+
+    /* ── PAGES ── */
+    .page { display: none; padding: 30px; }
+    .page.active { display: block; }
+
+    /* ── WELCOME ── */
+    .welcome-page {
+      display: none;
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .welcome-page.active { display: flex; }
+    .welcome-page h1 {
+      font-size: 40px;
+      font-weight: bold;
+      font-family: 'Times New Roman', serif;
+    }
+
+    /* ── FORM ── */
+    .page h2 {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .form-group { margin-bottom: 12px; }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 300px;
+      height: 30px;
+      font-family: 'Times New Roman', serif;
+      font-size: 13px;
+      padding: 4px 8px;
+      border: 1px solid #999;
+      background: white;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus { outline: 1px solid #666; }
+
+    /* ── FILE UPLOAD ROW ── */
+    .file-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .file-row .file-name-display {
+      width: 215px;
+      height: 30px;
+      font-family: 'Times New Roman', serif;
+      font-size: 13px;
+      padding: 4px 8px;
+      border: 1px solid #999;
+      background: #f5f5f5;
+      color: #555;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .file-row button {
+      height: 30px;
+      padding: 0 12px;
+      font-family: 'Times New Roman', serif;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      border: 1px solid #999;
+      background: #d4d4d4;
+    }
+    .file-row button:hover { background: #c0c0c0; }
+
+    .file-hint {
+      font-size: 11px;
+      color: #777;
+      margin-top: 4px;
+      font-style: italic;
+    }
+
+    /* ── ACTION BUTTONS ── */
+    .btn {
+      margin-top: 16px;
+      padding: 7px 20px;
+      font-family: 'Times New Roman', serif;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      border: 1px solid #999;
+      background: #d4d4d4;
+    }
+    .btn:hover { background: #c0c0c0; }
+    .btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    /* ── MESSAGES ── */
+    .success-msg {
+      display: none;
+      margin-top: 14px;
+      color: green;
+      font-weight: bold;
+    }
+    .error-msg {
+      display: none;
+      margin-top: 14px;
+      color: red;
+      font-weight: bold;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">Project Document Browser</div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+      <button id="btn-search" onclick="showPage('search', this)">
+        Search Project
+      </button>
+      <button id="btn-add" onclick="showPage('add', this)">
+        Add Files
+      </button>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+
+      <!-- WELCOME -->
+      <div class="welcome-page active" id="page-welcome">
+        <h1>Project Document Browser</h1>
+      </div>
+
+      <!-- SEARCH PAGE -->
+      <div class="page" id="page-search">
+        <h2>Search Project</h2>
+
+        <div class="form-group">
+          <label>Project Name</label>
+          <input type="text" id="s-projectName"/>
+        </div>
+
+        <div class="form-group">
+          <label>Sub System</label>
+          <input type="text" id="s-subsystem"/>
+        </div>
+
+        <div class="form-group">
+          <label>Mission</label>
+          <input type="text" id="s-mission"/>
+        </div>
+
+        <div class="form-group">
+          <label>Version</label>
+          <input type="text" id="s-version"/>
+        </div>
+
+        <div class="form-group">
+          <label>Document</label>
+          <select id="s-docType">
+            <option value="All">All</option>
+            <option>SRS</option>
+            <option>SDD</option>
+            <option>ICD</option>
+            <option>Change Note</option>
+            <option>Resource List</option>
+            <option>Observation Reports</option>
+            <option>Reply Report</option>
+            <option>Certificates</option>
+            <option>Technical Notes</option>
+          </select>
+        </div>
+
+        <button class="btn" onclick="runSearch()">Search</button>
+
+        <div class="error-msg" id="search-error">
+          Please enter a Project Name to search.
+        </div>
+      </div>
+
+      <!-- ADD FILE PAGE -->
+      <div class="page" id="page-add">
+        <h2>Add File</h2>
+
+        <div class="form-group">
+          <label>Project Name</label>
+          <input type="text" id="a-projectName"/>
+        </div>
+
+        <div class="form-group">
+          <label>Sub System</label>
+          <input type="text" id="a-subsystem"/>
+        </div>
+
+        <div class="form-group">
+          <label>Mission</label>
+          <input type="text" id="a-mission"/>
+        </div>
+
+        <div class="form-group">
+          <label>Document Type</label>
+          <select id="a-docType">
+            <option value="">-- Select --</option>
+            <option>SRS</option>
+            <option>SDD</option>
+            <option>ICD</option>
+            <option>Change Note</option>
+            <option>Resource List</option>
+            <option>Observation Reports</option>
+            <option>Reply Report</option>
+            <option>Certificates</option>
+            <option>Technical Notes</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Version</label>
+          <input type="text" id="a-version"/>
+        </div>
+
+        <div class="form-group">
+          <label>Version Date</label>
+          <input type="date" id="a-versionDate"
+                 style="width:300px;"/>
+        </div>
+
+        <div class="form-group">
+          <label>Submission Date</label>
+          <input type="date" id="a-submissionDate"
+                 style="width:300px;"/>
+        </div>
+
+        <div class="form-group">
+          <label>File</label>
+          <div class="file-row">
+            <div class="file-name-display" id="a-fileNameDisplay">
+              No file selected
+            </div>
+            <button onclick="document.getElementById('file-input').click()">
+              Browse
+            </button>
+          </div>
+          <!-- Hidden actual file input - holds the real file object -->
+          <input type="file" id="file-input"
+                 style="display:none"
+                 accept=".pdf,.doc,.docx,.xlsx,.pptx"
+                 onchange="handleFilePick(this)"/>
+        </div>
+
+        <button class="btn" id="submit-btn" onclick="submitDoc()">
+          Submit
+        </button>
+
+        <div class="success-msg" id="add-success">
+          Document added successfully!
+        </div>
+        <div class="error-msg" id="add-error">
+          Please fill in Project Name and Sub System.
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    // Keeps a reference to the actual selected File object
+    let selectedFile = null;
+
+    // ── Page navigation ───────────────────────────
+    function showPage(name, clickedBtn) {
+      document.getElementById('page-welcome').classList.remove('active');
+      document.getElementById('page-search').classList.remove('active');
+      document.getElementById('page-add').classList.remove('active');
+      document.getElementById('page-' + name).classList.add('active');
+
+      document.querySelectorAll('.left-panel button')
+              .forEach(b => b.classList.remove('active-btn'));
+      clickedBtn.classList.add('active-btn');
+
+      hideMessages();
+    }
+
+    // ── Search ────────────────────────────────────
+    function runSearch() {
+      const projectName = document.getElementById('s-projectName').value.trim();
+      const subsystem   = document.getElementById('s-subsystem').value.trim();
+      const mission     = document.getElementById('s-mission').value.trim();
+      const version     = document.getElementById('s-version').value.trim();
+      const docType     = document.getElementById('s-docType').value;
+
+      if (projectName === '') {
+        document.getElementById('search-error').style.display = 'block';
+        return;
+      }
+      document.getElementById('search-error').style.display = 'none';
+
+      const params = new URLSearchParams({
+        projectName, subsystem, mission, version, docType
+      });
+
+      window.open(
+        'results.html?' + params.toString(),
+        '_blank',
+        'width=1050,height=520,top=80,left=80,resizable=yes,scrollbars=yes'
+      );
+    }
+
+    // ── File picked via Browse ────────────────────
+    function handleFilePick(input) {
+      if (input.files && input.files[0]) {
+        selectedFile = input.files[0];
+        document.getElementById('a-fileNameDisplay').textContent =
+          selectedFile.name;
+      } else {
+        selectedFile = null;
+        document.getElementById('a-fileNameDisplay').textContent =
+          'No file selected';
+      }
+    }
+
+    // ── Submit Add File form ──────────────────────
+    async function submitDoc() {
+      const projectName    = document.getElementById('a-projectName').value.trim();
+      const subsystem      = document.getElementById('a-subsystem').value.trim();
+      const mission        = document.getElementById('a-mission').value.trim();
+      const docType        = document.getElementById('a-docType').value;
+      const version        = document.getElementById('a-version').value.trim();
+      const versionDate    = document.getElementById('a-versionDate').value;
+      const submissionDate = document.getElementById('a-submissionDate').value;
+
+      if (projectName === '' || subsystem === '') {
+        document.getElementById('add-error').style.display   = 'block';
+        document.getElementById('add-success').style.display = 'none';
+        return;
+      }
+      document.getElementById('add-error').style.display = 'none';
+
+      // Build FormData - required because we're sending an actual file
+      const formData = new FormData();
+      formData.append('projectName', projectName);
+      formData.append('subsystem', subsystem);
+      formData.append('mission', mission);
+      formData.append('docType', docType);
+      formData.append('version', version);
+      formData.append('versionDate', versionDate);
+      formData.append('submissionDate', submissionDate);
+
+      if (selectedFile) {
+        formData.append('file', selectedFile);
+      }
+
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Uploading...';
+
+      try {
+        const response = await fetch('http://localhost:3000/add-document', {
+          method: 'POST',
+          body: formData
+          // No Content-Type header - browser sets the correct
+          // multipart boundary automatically for FormData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showSuccess();
+        } else {
+          alert('Error: ' + (result.error || 'Could not add document.'));
+        }
+
+      } catch (err) {
+        alert('Could not connect to server. Make sure node server.js is running.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit';
+      }
+    }
+
+    function showSuccess() {
+      document.getElementById('add-success').style.display = 'block';
+      setTimeout(() => {
+        document.getElementById('add-success').style.display = 'none';
+      }, 3000);
+      clearAddForm();
+    }
+
+    // Clear add form 
+    function clearAddForm() {
+      document.getElementById('a-projectName').value    = '';
+      document.getElementById('a-subsystem').value      = '';
+      document.getElementById('a-mission').value        = '';
+      document.getElementById('a-docType').value        = '';
+      document.getElementById('a-version').value        = '';
+      document.getElementById('a-versionDate').value    = '';
+      document.getElementById('a-submissionDate').value = '';
+      document.getElementById('a-fileNameDisplay').textContent = 'No file selected';
+      document.getElementById('file-input').value = '';
+      selectedFile = null;
+    }
+
+    function hideMessages() {
+      document.getElementById('search-error').style.display  = 'none';
+      document.getElementById('add-success').style.display   = 'none';
+      document.getElementById('add-error').style.display     = 'none';
+    }
+
+  </script>
+</body>
+</html>
