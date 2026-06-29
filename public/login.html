@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - Project Document Browser</title>
+  <style>
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Times New Roman', serif;
+      font-size: 14px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #f0f0f0;
+    }
+
+    .top-bar {
+      background: #f0f0f0;
+      border-bottom: 1px solid #ccc;
+      padding: 10px 20px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .center {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-box {
+      background: white;
+      border: 1px solid #ccc;
+      padding: 35px 40px;
+      width: 360px;
+    }
+
+    .login-box h2 {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .form-group { margin-bottom: 16px; }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .form-group input {
+      width: 100%;
+      height: 32px;
+      padding: 4px 10px;
+      border: 1px solid #999;
+      font-family: 'Times New Roman', serif;
+      font-size: 13px;
+      background: white;
+    }
+
+    .form-group input:focus { outline: 1px solid #555; }
+
+    .role-group { margin-bottom: 20px; }
+
+    .role-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .role-options {
+      display: flex;
+      gap: 30px;
+    }
+
+    .role-option {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .role-option input[type="radio"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 9px;
+      font-family: 'Times New Roman', serif;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      background: #d4d4d4;
+      border: 1px solid #999;
+      margin-top: 6px;
+    }
+
+    .login-btn:hover { background: #c0c0c0; }
+    .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .error-msg {
+      display: none;
+      color: red;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 14px;
+      font-size: 13px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">Project Document Browser</div>
+
+  <div class="center">
+    <div class="login-box">
+      <h2>Login</h2>
+
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="username" 
+               onkeydown="if(event.key==='Enter') doLogin()"/>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" 
+               onkeydown="if(event.key==='Enter') doLogin()"/>
+      </div>
+
+      <div class="role-group">
+        <label>Role</label>
+        <div class="role-options">
+          <label class="role-option">
+            <input type="radio" name="role" value="user" checked/>
+            User
+          </label>
+          <label class="role-option">
+            <input type="radio" name="role" value="admin"/>
+            Administrator
+          </label>
+        </div>
+      </div>
+
+      <button class="login-btn" id="login-btn" onclick="doLogin()">
+        Login
+      </button>
+
+      <div class="error-msg" id="error-msg"></div>
+    </div>
+  </div>
+
+  <script>
+
+    async function doLogin() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const role     = document.querySelector('input[name="role"]:checked').value;
+      const errorMsg = document.getElementById('error-msg');
+      const btn      = document.getElementById('login-btn');
+
+      errorMsg.style.display = 'none';
+
+      if (!username || !password) {
+        errorMsg.textContent   = 'Please enter username and password.';
+        errorMsg.style.display = 'block';
+        return;
+      }
+
+      btn.disabled    = true;
+      btn.textContent = 'Logging in...';
+
+      try {
+        const response = await fetch('http://localhost:3000/login', {
+          method : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body   : JSON.stringify({ username, password, role })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          sessionStorage.setItem('username', result.username);
+          sessionStorage.setItem('role',     result.role);
+          window.location.href = 'index.html';
+        } else {
+          errorMsg.textContent   = result.error || 'Invalid username, password or role.';
+          errorMsg.style.display = 'block';
+        }
+
+      } catch (err) {
+        errorMsg.textContent   = 'Could not connect to server. Make sure node server.js is running.';
+        errorMsg.style.display = 'block';
+      } finally {
+        btn.disabled    = false;
+        btn.textContent = 'Login';
+      }
+    }
+
+  </script>
+</body>
+</html>
