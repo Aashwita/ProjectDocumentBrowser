@@ -22,11 +22,43 @@
       background: #f0f0f0;
       border-bottom: 1px solid #ccc;
       padding: 10px 20px;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       font-size: 16px;
       font-weight: bold;
       flex-shrink: 0;
     }
+
+    .top-bar-title { flex: 1; text-align: center; }
+
+    .top-bar-user {
+      font-size: 13px;
+      font-weight: normal;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .role-badge {
+      padding: 2px 10px;
+      border: 1px solid #999;
+      background: #e8e8e8;
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: capitalize;
+    }
+
+    .logout-btn {
+      padding: 3px 12px;
+      font-family: 'Times New Roman', serif;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      border: 1px solid #999;
+      background: #d4d4d4;
+    }
+    .logout-btn:hover { background: #c0c0c0; }
 
     /* ── MAIN LAYOUT ── */
     .main {
@@ -88,7 +120,6 @@
     .welcome-page h1 {
       font-size: 40px;
       font-weight: bold;
-      font-family: 'Times New Roman', serif;
     }
 
     /* ── FORM ── */
@@ -121,14 +152,10 @@
     .form-group input:focus,
     .form-group select:focus { outline: 1px solid #666; }
 
-    /* ── FILE UPLOAD ROW ── */
-    .file-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    /* ── FILE ROW ── */
+    .file-row { display: flex; align-items: center; gap: 8px; }
 
-    .file-row .file-name-display {
+    .file-name-display {
       width: 215px;
       height: 30px;
       font-family: 'Times New Roman', serif;
@@ -141,7 +168,6 @@
       align-items: center;
       overflow: hidden;
       white-space: nowrap;
-      text-overflow: ellipsis;
     }
 
     .file-row button {
@@ -156,14 +182,7 @@
     }
     .file-row button:hover { background: #c0c0c0; }
 
-    .file-hint {
-      font-size: 11px;
-      color: #777;
-      margin-top: 4px;
-      font-style: italic;
-    }
-
-    /* ── ACTION BUTTONS ── */
+    /* ── BUTTONS ── */
     .btn {
       margin-top: 16px;
       padding: 7px 20px;
@@ -175,10 +194,7 @@
       background: #d4d4d4;
     }
     .btn:hover { background: #c0c0c0; }
-    .btn:disabled {
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
+    .btn:disabled { cursor: not-allowed; opacity: 0.6; }
 
     /* ── MESSAGES ── */
     .success-msg {
@@ -199,19 +215,33 @@
 <body>
 
   <!-- TOP BAR -->
-  <div class="top-bar">Project Document Browser</div>
+  <div class="top-bar">
+    <div style="width:200px"></div>
+    <div class="top-bar-title">Project Document Browser</div>
+    <div class="top-bar-user">
+      <span id="display-username"></span>
+      <span class="role-badge" id="display-role"></span>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </div>
 
   <!-- MAIN -->
   <div class="main">
 
     <!-- LEFT PANEL -->
     <div class="left-panel">
+
+      <!-- Search — visible to both user and admin -->
       <button id="btn-search" onclick="showPage('search', this)">
         Search Project
       </button>
-      <button id="btn-add" onclick="showPage('add', this)">
+
+      <!-- Add Files — visible to user only, hidden for admin -->
+      <button id="btn-add" onclick="showPage('add', this)"
+              style="display:none">
         Add Files
       </button>
+
     </div>
 
     <!-- RIGHT PANEL -->
@@ -219,7 +249,12 @@
 
       <!-- WELCOME -->
       <div class="welcome-page active" id="page-welcome">
-        <h1>Project Document Browser</h1>
+        <div>
+          <h1>Project Document Browser</h1>
+          <p id="welcome-msg"
+             style="margin-top:14px;font-size:16px;color:#555;text-align:center;">
+          </p>
+        </div>
       </div>
 
       <!-- SEARCH PAGE -->
@@ -269,7 +304,7 @@
         </div>
       </div>
 
-      <!-- ADD FILE PAGE -->
+      <!-- ADD FILE PAGE — user only -->
       <div class="page" id="page-add">
         <h2>Add File</h2>
 
@@ -311,14 +346,12 @@
 
         <div class="form-group">
           <label>Version Date</label>
-          <input type="date" id="a-versionDate"
-                 style="width:300px;"/>
+          <input type="date" id="a-versionDate" style="width:300px;"/>
         </div>
 
         <div class="form-group">
           <label>Submission Date</label>
-          <input type="date" id="a-submissionDate"
-                 style="width:300px;"/>
+          <input type="date" id="a-submissionDate" style="width:300px;"/>
         </div>
 
         <div class="form-group">
@@ -331,9 +364,7 @@
               Browse
             </button>
           </div>
-          <!-- Hidden actual file input - holds the real file object -->
-          <input type="file" id="file-input"
-                 style="display:none"
+          <input type="file" id="file-input" style="display:none"
                  accept=".pdf,.doc,.docx,.xlsx,.pptx"
                  onchange="handleFilePick(this)"/>
         </div>
@@ -348,15 +379,37 @@
         <div class="error-msg" id="add-error">
           Please fill in Project Name and Sub System.
         </div>
-
       </div>
+
     </div>
   </div>
 
   <script>
 
-    // Keeps a reference to the actual selected File object
-    let selectedFile = null;
+    // ── Session check ─────────────────────────────
+    const username = sessionStorage.getItem('username');
+    const role     = sessionStorage.getItem('role');
+
+    if (!username || !role) {
+      window.location.href = 'login.html';
+    }
+
+    // ── Show username and role in top bar ─────────
+    document.getElementById('display-username').textContent = username;
+    document.getElementById('display-role').textContent     = role;
+
+    
+
+    // ── Show Add Files only for user, not admin ───
+    if (role === 'user') {
+      document.getElementById('btn-add').style.display = 'block';
+    }
+
+    // ── Logout ────────────────────────────────────
+    function logout() {
+      sessionStorage.clear();
+      window.location.href = 'login.html';
+    }
 
     // ── Page navigation ───────────────────────────
     function showPage(name, clickedBtn) {
@@ -364,11 +417,9 @@
       document.getElementById('page-search').classList.remove('active');
       document.getElementById('page-add').classList.remove('active');
       document.getElementById('page-' + name).classList.add('active');
-
       document.querySelectorAll('.left-panel button')
               .forEach(b => b.classList.remove('active-btn'));
       clickedBtn.classList.add('active-btn');
-
       hideMessages();
     }
 
@@ -387,30 +438,29 @@
       document.getElementById('search-error').style.display = 'none';
 
       const params = new URLSearchParams({
-        projectName, subsystem, mission, version, docType
+        projectName, subsystem, mission, version, docType,
+        role  // passed so results.html knows what buttons to show
       });
 
       window.open(
         'results.html?' + params.toString(),
         '_blank',
-        'width=1050,height=520,top=80,left=80,resizable=yes,scrollbars=yes'
+        'width=1100,height=520,top=80,left=80,resizable=yes,scrollbars=yes'
       );
     }
 
-    // ── File picked via Browse ────────────────────
+    // ── File picker ───────────────────────────────
+    let selectedFile = null;
+
     function handleFilePick(input) {
       if (input.files && input.files[0]) {
         selectedFile = input.files[0];
         document.getElementById('a-fileNameDisplay').textContent =
           selectedFile.name;
-      } else {
-        selectedFile = null;
-        document.getElementById('a-fileNameDisplay').textContent =
-          'No file selected';
       }
     }
 
-    // ── Submit Add File form ──────────────────────
+    // ── Submit add file form ──────────────────────
     async function submitDoc() {
       const projectName    = document.getElementById('a-projectName').value.trim();
       const subsystem      = document.getElementById('a-subsystem').value.trim();
@@ -427,36 +477,37 @@
       }
       document.getElementById('add-error').style.display = 'none';
 
-      // Build FormData - required because we're sending an actual file
       const formData = new FormData();
-      formData.append('projectName', projectName);
-      formData.append('subsystem', subsystem);
-      formData.append('mission', mission);
-      formData.append('docType', docType);
-      formData.append('version', version);
-      formData.append('versionDate', versionDate);
+      formData.append('projectName',    projectName);
+      formData.append('subsystem',      subsystem);
+      formData.append('mission',        mission);
+      formData.append('docType',        docType);
+      formData.append('version',        version);
+      formData.append('versionDate',    versionDate);
       formData.append('submissionDate', submissionDate);
+      formData.append('uploadedBy',     username);
 
       if (selectedFile) {
         formData.append('file', selectedFile);
       }
 
-      const submitBtn = document.getElementById('submit-btn');
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Uploading...';
+      const btn = document.getElementById('submit-btn');
+      btn.disabled    = true;
+      btn.textContent = 'Uploading...';
 
       try {
         const response = await fetch('http://localhost:3000/add-document', {
           method: 'POST',
-          body: formData
-          // No Content-Type header - browser sets the correct
-          // multipart boundary automatically for FormData
+          body  : formData
         });
-
         const result = await response.json();
 
         if (result.success) {
-          showSuccess();
+          document.getElementById('add-success').style.display = 'block';
+          setTimeout(() => {
+            document.getElementById('add-success').style.display = 'none';
+          }, 3000);
+          clearAddForm();
         } else {
           alert('Error: ' + (result.error || 'Could not add document.'));
         }
@@ -464,20 +515,12 @@
       } catch (err) {
         alert('Could not connect to server. Make sure node server.js is running.');
       } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Submit';
+        btn.disabled    = false;
+        btn.textContent = 'Submit';
       }
     }
 
-    function showSuccess() {
-      document.getElementById('add-success').style.display = 'block';
-      setTimeout(() => {
-        document.getElementById('add-success').style.display = 'none';
-      }, 3000);
-      clearAddForm();
-    }
-
-    // Clear add form 
+    // ── Clear add form ────────────────────────────
     function clearAddForm() {
       document.getElementById('a-projectName').value    = '';
       document.getElementById('a-subsystem').value      = '';
@@ -491,6 +534,7 @@
       selectedFile = null;
     }
 
+    // ── Hide messages ─────────────────────────────
     function hideMessages() {
       document.getElementById('search-error').style.display  = 'none';
       document.getElementById('add-success').style.display   = 'none';
