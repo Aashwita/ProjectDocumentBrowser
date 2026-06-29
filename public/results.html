@@ -16,7 +16,7 @@
       height: 100vh;
     }
 
-    /* ── INFO BAR ── */
+    /* ── info bar ── */
     .info-bar {
       background: #f0f0f0;
       border-bottom: 1px solid #ccc;
@@ -35,7 +35,7 @@
       color: #444;
     }
 
-    /* ── TABLE AREA ── */
+    /* ── table ── */
     .table-area {
       flex: 1;
       overflow: auto;
@@ -185,7 +185,6 @@
 
     const SERVER_URL = 'http://localhost:3000';
 
-    // ── Read URL parameters ───────────────────────
     const params      = new URLSearchParams(window.location.search);
     const projectName = params.get('projectName') || '';
     const subsystem   = params.get('subsystem')   || '';
@@ -201,7 +200,6 @@
       '   |   Version: '    + version     +
       '   |   Document: '   + docType;
 
-    // ── Load results from server ──────────────────
     async function loadResults() {
       try {
         const query = new URLSearchParams({
@@ -246,7 +244,6 @@
 
           const actionCell = tr.children[tr.children.length - 1];
 
-          // ── Open button — BOTH user and admin ────
           const openBtn       = document.createElement('button');
           openBtn.className   = 'open-btn';
           openBtn.textContent = 'Open';
@@ -278,7 +275,7 @@
 
           actionCell.appendChild(openBtn);
 
-          // ── Delete button — admin only ────────────
+          // ── Delete button(admin) ────────────
           if (role === 'admin') {
             const delBtn       = document.createElement('button');
             delBtn.className   = 'delete-btn';
