@@ -23,3 +23,14 @@ CREATE TABLE documents (
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
+
+CREATE TABLE users (
+    userId   INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    role     VARCHAR(20)  NOT NULL
+);
+
+INSERT INTO users (username, password, role) VALUES
+('admin', 'admin123', 'admin'),
+('user1', 'user123',  'user');
