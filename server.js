@@ -9,17 +9,17 @@ const app = express();
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// uploads
+// Uploads folder 
 if (!fs.existsSync('uploads')) {
     fs.mkdirSync('uploads');
 }
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// MySQL connection
+//MySQL Connection
 const db = mysql.createConnection({
     host    : 'localhost',
     user    : 'root',
-    password: 'password',
+    password: 'password',   // ← change this
     database: 'docbrowser'
 });
 
@@ -29,7 +29,6 @@ db.connect(err => {
 });
 
 app.use(express.json());
-
 
 app.post('/login', (req, res) => {
 
@@ -63,7 +62,6 @@ app.post('/login', (req, res) => {
     );
 });
 
-
 function parseMultipart(req, callback) {
 
     const contentType = req.headers['content-type'] || '';
@@ -85,22 +83,21 @@ function parseMultipart(req, callback) {
             const fields = {};
             let   file   = null;
 
-            
+
             const parts = raw.split('--' + boundary);
 
             parts.forEach(part => {
-              
+
                 if (!part || part.trim() === '--' || part.trim() === '') return;
 
-                // Header block ends at the first blank line
+                
                 const blankLine = part.indexOf('\r\n\r\n');
                 if (blankLine === -1) return;
 
                 const headerBlock = part.substring(0, blankLine);
-                let body = part.substring(blankLine + 4);
 
-                
                 if (body.endsWith('\r\n')) body = body.slice(0, -2);
+
                 const dispMatch     = headerBlock.match(/Content-Disposition:[^\r\n]*/i);
                 const nameMatch     = dispMatch ? dispMatch[0].match(/name="([^"]*)"/)     : null;
                 const filenameMatch = dispMatch ? dispMatch[0].match(/filename="([^"]*)"/) : null;
@@ -115,7 +112,6 @@ function parseMultipart(req, callback) {
                         buffer      : Buffer.from(body, 'binary')
                     };
                 } else {
-                    
                     fields[fieldName] = body;
                 }
             });
@@ -127,7 +123,6 @@ function parseMultipart(req, callback) {
         }
     });
 }
-
 
 app.post('/add-document', (req, res) => {
 
@@ -158,7 +153,6 @@ app.post('/add-document', (req, res) => {
 
         let filePath = '';
 
-        // Check if project already exists
         function saveToDatabase() {
             db.query(
                 `SELECT projectId FROM projects
@@ -170,10 +164,8 @@ app.post('/add-document', (req, res) => {
                     if (err) return res.status(500).json({ error: err.message });
 
                     if (rows.length > 0) {
-                        // Project exists — insert document directly
                         insertDoc(rows[0].projectId);
                     } else {
-                        // Project does not exist — create it first
                         db.query(
                             `INSERT INTO projects (projectName, subsystem, mission)
                              VALUES (?, ?, ?)`,
@@ -212,7 +204,7 @@ app.post('/add-document', (req, res) => {
             );
         }
 
-        // If a file was uploaded save it first then save to DB
+        
         if (file && file.buffer && file.buffer.length > 0) {
             const uniqueName = Date.now() + '-' + file.originalName;
             const savePath   = path.join(__dirname, 'uploads', uniqueName);
@@ -227,7 +219,7 @@ app.post('/add-document', (req, res) => {
                 saveToDatabase();
             });
         } else {
-            // No file attached — save record without file path
+            // file
             saveToDatabase();
         }
     });
@@ -238,7 +230,7 @@ app.delete('/delete-document/:docId', (req, res) => {
 
     const docId = req.params.docId;
 
-    // First get the filePath so we can delete the physical file too
+  
     db.query(
         'SELECT filePath FROM documents WHERE docId = ?',
         [docId],
@@ -248,14 +240,13 @@ app.delete('/delete-document/:docId', (req, res) => {
 
             const filePath = rows[0].filePath;
 
-            // Delete the database record
+            
             db.query(
                 'DELETE FROM documents WHERE docId = ?',
                 [docId],
                 (err) => {
                     if (err) return res.status(500).json({ error: err.message });
 
-                    // Also delete the physical file from uploads/ if it exists
                     if (filePath) {
                         const fullPath = path.join(__dirname, filePath);
                         if (fs.existsSync(fullPath)) {
@@ -270,6 +261,35 @@ app.delete('/delete-document/:docId', (req, res) => {
                     res.json({ success: true });
                 }
             );
+        }
+    );
+});
+
+app.put('/update-project/:projectId', (req, res) => {
+
+    const projectId   = req.params.projectId;
+    const { projectName, subsystem, mission } = req.body;
+
+    if (!projectName || !subsystem) {
+        return res.status(400).json({
+            error: 'Project Name and Sub System are required.'
+        });
+    }
+
+    db.query(
+        `UPDATE projects
+         SET projectName = ?,
+             subsystem   = ?,
+             mission     = ?
+         WHERE projectId = ?`,
+        [projectName, subsystem, mission || '', projectId],
+        (err) => {
+            if (err) {
+                console.log('Update error:', err.message);
+                return res.status(500).json({ error: err.message });
+            }
+            console.log('Project', projectId, 'updated.');
+            res.json({ success: true });
         }
     );
 });
@@ -301,14 +321,13 @@ app.get('/view-file/:filename', (req, res) => {
 
     const contentType = mimeTypes[ext] || 'application/octet-stream';
 
-    
+  
     res.setHeader('Content-Type', contentType);
     res.setHeader('Content-Disposition',
         'inline; filename="' + path.basename(filePath) + '"');
 
     fs.createReadStream(filePath).pipe(res);
 });
-
 
 app.get('/search', (req, res) => {
 
@@ -382,7 +401,7 @@ app.get('/search', (req, res) => {
     });
 });
 
-// 
+// start server
 app.listen(3000, () => {
     console.log('');
     console.log('Server started: http://localhost:3000');
