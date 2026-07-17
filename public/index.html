@@ -16,8 +16,7 @@
       flex-direction: column;
       overflow: hidden;
     }
-
-    /* ── TOP BAR ── */
+    
     .top-bar {
       background: #f0f0f0;
       border-bottom: 1px solid #ccc;
@@ -60,14 +59,13 @@
     }
     .logout-btn:hover { background: #c0c0c0; }
 
-    /* ── MAIN LAYOUT ── */
     .main {
       display: flex;
       flex: 1;
       overflow: hidden;
     }
 
-    /* ── LEFT PANEL ── */
+    
     .left-panel {
       width: 200px;
       background: #e8e8e8;
@@ -96,19 +94,16 @@
       background: #b0b0b0;
       border: 2px solid #666;
     }
-
-    /* ── RIGHT PANEL ── */
     .right-panel {
       flex: 1;
       overflow-y: auto;
       background: white;
     }
 
-    /* ── PAGES ── */
     .page { display: none; padding: 30px; }
     .page.active { display: block; }
 
-    /* ── WELCOME ── */
+    
     .welcome-page {
       display: none;
       height: 100%;
@@ -122,7 +117,6 @@
       font-weight: bold;
     }
 
-    /* ── FORM ── */
     .page h2 {
       font-size: 20px;
       font-weight: bold;
@@ -152,7 +146,8 @@
     .form-group input:focus,
     .form-group select:focus { outline: 1px solid #666; }
 
-    /* ── FILE ROW ── */
+
+    
     .file-row { display: flex; align-items: center; gap: 8px; }
 
     .file-name-display {
@@ -182,7 +177,7 @@
     }
     .file-row button:hover { background: #c0c0c0; }
 
-    /* ── BUTTONS ── */
+    
     .btn {
       margin-top: 16px;
       padding: 7px 20px;
@@ -196,7 +191,6 @@
     .btn:hover { background: #c0c0c0; }
     .btn:disabled { cursor: not-allowed; opacity: 0.6; }
 
-    /* ── MESSAGES ── */
     .success-msg {
       display: none;
       margin-top: 14px;
@@ -210,11 +204,19 @@
       font-weight: bold;
     }
 
+    
+    .loading-hint {
+      font-size: 12px;
+      color: #888;
+      font-style: italic;
+      margin-top: 4px;
+    }
+
   </style>
 </head>
 <body>
 
-  <!-- TOP BAR -->
+
   <div class="top-bar">
     <div style="width:200px"></div>
     <div class="top-bar-title">Project Document Browser</div>
@@ -225,29 +227,23 @@
     </div>
   </div>
 
-  <!-- MAIN -->
   <div class="main">
 
-    <!-- LEFT PANEL -->
+   
     <div class="left-panel">
-
-      <!-- Search — visible to both user and admin -->
+      
       <button id="btn-search" onclick="showPage('search', this)">
         Search Project
       </button>
-
-      <!-- Add Files — visible to user only, hidden for admin -->
       <button id="btn-add" onclick="showPage('add', this)"
               style="display:none">
         Add Files
       </button>
-
     </div>
 
-    <!-- RIGHT PANEL -->
     <div class="right-panel">
 
-      <!-- WELCOME -->
+
       <div class="welcome-page active" id="page-welcome">
         <div>
           <h1>Project Document Browser</h1>
@@ -257,23 +253,44 @@
         </div>
       </div>
 
-      <!-- SEARCH PAGE -->
+      
       <div class="page" id="page-search">
         <h2>Search Project</h2>
 
         <div class="form-group">
           <label>Project Name</label>
-          <input type="text" id="s-projectName"/>
+
+     
+          <select id="s-projectName-dropdown" style="display:none">
+            <option value="">-- Select Project --</option>
+          </select>
+
+          <input type="text" id="s-projectName-text"/>
+
+          <div class="loading-hint" id="s-projectName-hint"
+               style="display:none">
+            Loading projects...
+          </div>
         </div>
 
         <div class="form-group">
           <label>Sub System</label>
-          <input type="text" id="s-subsystem"/>
+          <select id="s-subsystem-dropdown" style="display:none">
+            <option value="">-- Select Sub System --</option>
+          </select>
+
+          <input type="text" id="s-subsystem-text"/>
         </div>
+
 
         <div class="form-group">
           <label>Mission</label>
-          <input type="text" id="s-mission"/>
+
+          <select id="s-mission-dropdown" style="display:none">
+            <option value="">-- Select Mission --</option>
+          </select>
+
+          <input type="text" id="s-mission-text"/>
         </div>
 
         <div class="form-group">
@@ -300,11 +317,11 @@
         <button class="btn" onclick="runSearch()">Search</button>
 
         <div class="error-msg" id="search-error">
-          Please enter a Project Name to search.
+          Please select or enter a Project Name to search.
         </div>
       </div>
 
-      <!-- ADD FILE PAGE — user only -->
+ 
       <div class="page" id="page-add">
         <h2>Add File</h2>
 
@@ -386,7 +403,9 @@
 
   <script>
 
-    // ── Session check ─────────────────────────────
+    const SERVER_URL = window.location.origin;
+
+    // session check
     const username = sessionStorage.getItem('username');
     const role     = sessionStorage.getItem('role');
 
@@ -394,24 +413,107 @@
       window.location.href = 'login.html';
     }
 
-    // ── Show username and role in top bar ─────────
     document.getElementById('display-username').textContent = username;
     document.getElementById('display-role').textContent     = role;
 
-    
 
-    // ── Show Add Files only for user, not admin ───
     if (role === 'user') {
+
+
       document.getElementById('btn-add').style.display = 'block';
+
+      document.getElementById('s-projectName-dropdown').style.display = 'block';
+      document.getElementById('s-subsystem-dropdown').style.display   = 'block';
+      document.getElementById('s-mission-dropdown').style.display     = 'block';
+      document.getElementById('s-projectName-text').style.display     = 'none';
+      document.getElementById('s-subsystem-text').style.display       = 'none';
+      document.getElementById('s-mission-text').style.display         = 'none';
+
+      loadDropdownOptions();
+
+    } else {
+
+      document.getElementById('s-projectName-dropdown').style.display = 'block';
+      document.getElementById('s-subsystem-dropdown').style.display   = 'block';
+      document.getElementById('s-mission-dropdown').style.display     = 'block';
+      document.getElementById('s-projectName-text').style.display     = 'none';
+      document.getElementById('s-subsystem-text').style.display       = 'none';
+      document.getElementById('s-mission-text').style.display         = 'none';
+
+      loadDropdownOptions();
     }
 
-    // ── Logout ────────────────────────────────────
+
+    async function loadDropdownOptions() {
+
+      document.getElementById('s-projectName-hint').style.display = 'block';
+
+      try {
+        const response = await fetch(SERVER_URL + '/get-projects');
+        if (!response.ok) throw new Error('Server error');
+
+        const projects = await response.json();
+
+        const projectNames = [...new Set(projects.map(p => p.projectName).filter(Boolean))];
+        const subsystems   = [...new Set(projects.map(p => p.subsystem).filter(Boolean))];
+        const missions     = [...new Set(projects.map(p => p.mission).filter(Boolean))];
+
+        const projDropdown = document.getElementById('s-projectName-dropdown');
+        projectNames.forEach(name => {
+          const opt = document.createElement('option');
+          opt.value       = name;
+          opt.textContent = name;
+          projDropdown.appendChild(opt);
+        });
+
+        const subDropdown = document.getElementById('s-subsystem-dropdown');
+        subsystems.forEach(sub => {
+          const opt = document.createElement('option');
+          opt.value       = sub;
+          opt.textContent = sub;
+          subDropdown.appendChild(opt);
+        });
+
+
+        const misDropdown = document.getElementById('s-mission-dropdown');
+        missions.forEach(mis => {
+          const opt = document.createElement('option');
+          opt.value       = mis;
+          opt.textContent = mis;
+          misDropdown.appendChild(opt);
+        });
+
+        document.getElementById('s-projectName-hint').style.display = 'none';
+
+      } catch (err) {
+        document.getElementById('s-projectName-hint').textContent =
+          'Could not load projects. Make sure server is running.';
+        console.error('Dropdown load error:', err);
+      }
+    }
+
+    function getSearchValues() {
+      if (role === 'user') {
+        return {
+          projectName: document.getElementById('s-projectName-dropdown').value,
+          subsystem  : document.getElementById('s-subsystem-dropdown').value,
+          mission    : document.getElementById('s-mission-dropdown').value
+        };
+      } else {
+        return {
+          projectName: document.getElementById('s-projectName-text').value.trim(),
+          subsystem  : document.getElementById('s-subsystem-text').value.trim(),
+          mission    : document.getElementById('s-mission-text').value.trim()
+        };
+      }
+    }
+
+
     function logout() {
       sessionStorage.clear();
       window.location.href = 'login.html';
     }
 
-    // ── Page navigation ───────────────────────────
     function showPage(name, clickedBtn) {
       document.getElementById('page-welcome').classList.remove('active');
       document.getElementById('page-search').classList.remove('active');
@@ -423,13 +525,10 @@
       hideMessages();
     }
 
-    // ── Search ────────────────────────────────────
     function runSearch() {
-      const projectName = document.getElementById('s-projectName').value.trim();
-      const subsystem   = document.getElementById('s-subsystem').value.trim();
-      const mission     = document.getElementById('s-mission').value.trim();
-      const version     = document.getElementById('s-version').value.trim();
-      const docType     = document.getElementById('s-docType').value;
+      const { projectName, subsystem, mission } = getSearchValues();
+      const version = document.getElementById('s-version').value.trim();
+      const docType = document.getElementById('s-docType').value;
 
       if (projectName === '') {
         document.getElementById('search-error').style.display = 'block';
@@ -438,8 +537,7 @@
       document.getElementById('search-error').style.display = 'none';
 
       const params = new URLSearchParams({
-        projectName, subsystem, mission, version, docType,
-        role  // passed so results.html knows what buttons to show
+        projectName, subsystem, mission, version, docType, role
       });
 
       window.open(
@@ -449,7 +547,6 @@
       );
     }
 
-    // ── File picker ───────────────────────────────
     let selectedFile = null;
 
     function handleFilePick(input) {
@@ -460,7 +557,6 @@
       }
     }
 
-    // ── Submit add file form ──────────────────────
     async function submitDoc() {
       const projectName    = document.getElementById('a-projectName').value.trim();
       const subsystem      = document.getElementById('a-subsystem').value.trim();
@@ -496,7 +592,7 @@
       btn.textContent = 'Uploading...';
 
       try {
-        const response = await fetch('http://localhost:3000/add-document', {
+        const response = await fetch(SERVER_URL + '/add-document', {
           method: 'POST',
           body  : formData
         });
@@ -508,6 +604,10 @@
             document.getElementById('add-success').style.display = 'none';
           }, 3000);
           clearAddForm();
+
+     
+          if (role === 'user') refreshDropdowns();
+
         } else {
           alert('Error: ' + (result.error || 'Could not add document.'));
         }
@@ -520,7 +620,34 @@
       }
     }
 
-    // ── Clear add form ────────────────────────────
+    async function refreshDropdowns() {
+      try {
+        const response = await fetch(SERVER_URL + '/get-projects');
+        const projects = await response.json();
+
+        const projectNames = [...new Set(projects.map(p => p.projectName).filter(Boolean))];
+        const subsystems   = [...new Set(projects.map(p => p.subsystem).filter(Boolean))];
+        const missions     = [...new Set(projects.map(p => p.mission).filter(Boolean))];
+
+        rebuildDropdown('s-projectName-dropdown', projectNames, '-- Select Project --');
+        rebuildDropdown('s-subsystem-dropdown',   subsystems,   '-- Select Sub System --');
+        rebuildDropdown('s-mission-dropdown',     missions,     '-- Select Mission --');
+
+      } catch (err) {
+        console.error('Dropdown refresh error:', err);
+      }
+    }
+
+    function rebuildDropdown(id, values, defaultLabel) {
+      const dropdown = document.getElementById(id);
+      dropdown.innerHTML = `<option value="">${defaultLabel}</option>`;
+      values.forEach(val => {
+        const opt       = document.createElement('option');
+        opt.value       = val;
+        opt.textContent = val;
+        dropdown.appendChild(opt);
+      });
+    }
     function clearAddForm() {
       document.getElementById('a-projectName').value    = '';
       document.getElementById('a-subsystem').value      = '';
@@ -534,7 +661,6 @@
       selectedFile = null;
     }
 
-    // ── Hide messages ─────────────────────────────
     function hideMessages() {
       document.getElementById('search-error').style.display  = 'none';
       document.getElementById('add-success').style.display   = 'none';
