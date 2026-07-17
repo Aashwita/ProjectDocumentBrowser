@@ -16,7 +16,6 @@
       height: 100vh;
     }
 
-    /* info bar */
     .info-bar {
       background: #f0f0f0;
       border-bottom: 1px solid #ccc;
@@ -35,7 +34,6 @@
       color: #444;
     }
 
-    /* table*/
     .table-area {
       flex: 1;
       overflow: auto;
@@ -65,6 +63,7 @@
 
     tbody tr:hover { background: #f5f5f5; }
 
+
     .open-btn,
     .edit-btn,
     .delete-btn,
@@ -93,7 +92,6 @@
       cursor: not-allowed;
       opacity: 0.5;
     }
-
 
     .edit-row td {
       background: #f5f8ff;
@@ -161,6 +159,7 @@
 </head>
 <body>
 
+
   <div class="info-bar">
     <h2>Search Results</h2>
     <p id="search-info">Loading...</p>
@@ -191,16 +190,15 @@
     </table>
   </div>
 
-  
   <div class="bottom-bar">
     <button onclick="window.close()">Close</button>
   </div>
 
   <script>
 
-    const SERVER_URL = 'http://localhost:3000';
+    const SERVER_URL = window.location.origin;
 
-    //  URL parameters
+
     const params      = new URLSearchParams(window.location.search);
     const projectName = params.get('projectName') || '';
     const subsystem   = params.get('subsystem')   || '';
@@ -216,7 +214,6 @@
       '   |   Version: '    + version     +
       '   |   Document: '   + docType;
 
-    // Load results 
     async function loadResults() {
       try {
         const query = new URLSearchParams({
@@ -272,7 +269,6 @@
 
       const actionCell = tr.children[tr.children.length - 1];
 
-      // ── Open button — both user and admin ────────
       const openBtn       = document.createElement('button');
       openBtn.className   = 'open-btn';
       openBtn.textContent = 'Open';
@@ -349,12 +345,13 @@
       tbody.appendChild(tr);
     }
 
-   
+
     function showEditRow(tr, row) {
 
-      
+  
       const existingEdit = document.querySelector('.edit-row');
       if (existingEdit) existingEdit.remove();
+
 
       const editTr = document.createElement('tr');
       editTr.className = 'edit-row';
@@ -383,15 +380,15 @@
           <button class="cancel-btn" id="cancel-btn">Cancel</button>
         </td>`;
 
+      
       tr.insertAdjacentElement('afterend', editTr);
-
+   
+ 
       document.getElementById('edit-projectName').focus();
-
 
       document.getElementById('cancel-btn').addEventListener('click', () => {
         editTr.remove();
       });
-
 
       document.getElementById('save-btn').addEventListener('click', async () => {
 
@@ -423,11 +420,12 @@
           const result = await response.json();
 
           if (result.success) {
-            
+            // Update the visible cells in the original row
             tr.children[0].textContent = newProjectName;
             tr.children[1].textContent = newSubsystem;
             tr.children[2].textContent = newMission;
 
+            // Remove the edit row
             editTr.remove();
 
             alert('Project updated successfully.');
@@ -441,7 +439,7 @@
         }
       });
 
-      
+
       editTr.querySelectorAll('input').forEach(input => {
         input.addEventListener('keydown', e => {
           if (e.key === 'Enter')  document.getElementById('save-btn').click();
