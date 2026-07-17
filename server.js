@@ -6,6 +6,11 @@ const fs      = require('fs');
 
 const app = express();
 
+app.use((req, res, next) => {
+    res.setHeader('ngrok-skip-browser-warning', 'true');
+    next();
+});
+
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
