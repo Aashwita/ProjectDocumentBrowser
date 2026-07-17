@@ -9,6 +9,22 @@ const app = express();
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.get('/get-projects', (req, res) => {
+    db.query(
+        `SELECT DISTINCT projectName, subsystem, mission
+         FROM projects
+         ORDER BY projectName`,
+        (err, rows) => {
+            if (err) {
+                console.log('Get projects error:', err.message);
+                return res.status(500).json({ error: err.message });
+            }
+            res.json(rows);
+        }
+    );
+});
+
+
 // Uploads folder 
 if (!fs.existsSync('uploads')) {
     fs.mkdirSync('uploads');
