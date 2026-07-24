@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login - Project Document Browser</title>
+  <title>Login - DSQA Document Tracebility and Configuration Management Tool</title>
   <style>
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -14,19 +14,43 @@
       height: 100vh;
       display: flex;
       flex-direction: column;
-      background: #f0f0f0;
+      background: #dbecff;
     }
 
+    /* ── TOP BAR ── */
     .top-bar {
-      background: #f0f0f0;
-      border-bottom: 1px solid #ccc;
-      padding: 10px 20px;
+      background: #1e4d7b;
+      border-bottom: 1px solid #c9a84c;
+      padding: 8px 20px;
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      position: relative;
+      height: 56px;
+    }
+
+    .top-bar-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: absolute;
+      left: 20px;
+    }
+
+    .top-bar-logo img {
+      height: 40px;
+      width: 40px;
+    }
+
+    .top-bar-title {
+      flex: 1;
       text-align: center;
       font-size: 16px;
       font-weight: bold;
-      flex-shrink: 0;
+      color: #f0e6c8;
     }
 
+    /* ── CENTER ── */
     .center {
       flex: 1;
       display: flex;
@@ -34,9 +58,10 @@
       justify-content: center;
     }
 
+    /* ── LOGIN BOX ── */
     .login-box {
-      background: white;
-      border: 1px solid #ccc;
+      background: #fcfdf7;
+      border: 1px solid #163a5f;
       padding: 35px 40px;
       width: 360px;
     }
@@ -66,7 +91,7 @@
       background: white;
     }
 
-    .form-group input:focus { outline: 1px solid #555; }
+    .form-group input:focus { outline: 1px solid #c9a84c; }
 
     .role-group { margin-bottom: 20px; }
 
@@ -102,12 +127,13 @@
       font-size: 14px;
       font-weight: bold;
       cursor: pointer;
-      background: #d4d4d4;
-      border: 1px solid #999;
+      color: #ffffff;
+      background: #1e4d7b;
+      border: 1px solid #163a5f;
       margin-top: 6px;
     }
 
-    .login-btn:hover { background: #c0c0c0; }
+    .login-btn:hover { background: #0e7c7b; }
     .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
     .error-msg {
@@ -119,25 +145,44 @@
       font-size: 13px;
     }
 
+    /* ── FOOTER ── */
+    .footer {
+      background: #163a5f;
+      border-top: 1px solid #c9a84c;
+      padding: 6px 20px;
+      text-align: right;
+      font-size: 12px;
+      color: #c9a84c;
+      font-family: 'Times New Roman', serif;
+      flex-shrink: 0;
+    }
+
   </style>
 </head>
 <body>
 
-  <div class="top-bar">Project Document Browser</div>
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-logo">
+      <img src="logo.svg" alt="Logo"/>
+    </div>
+    <div class="top-bar-title">DSQA Document Tracebility and Configuration Management Tool</div>
+  </div>
 
+  <!-- CENTER -->
   <div class="center">
     <div class="login-box">
       <h2>Login</h2>
 
       <div class="form-group">
         <label>Username</label>
-        <input type="text" id="username" 
+        <input type="text" id="username"
                onkeydown="if(event.key==='Enter') doLogin()"/>
       </div>
 
       <div class="form-group">
         <label>Password</label>
-        <input type="password" id="password" 
+        <input type="password" id="password"
                onkeydown="if(event.key==='Enter') doLogin()"/>
       </div>
 
@@ -161,6 +206,11 @@
 
       <div class="error-msg" id="error-msg"></div>
     </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    DSQA&nbsp;|&nbsp;DRDO
   </div>
 
   <script>
