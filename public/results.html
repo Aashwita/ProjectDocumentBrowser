@@ -2,38 +2,73 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <title>Search Results</title>
+  <title>Search Results- DSQA Document Tracebility and Configuration Management Tool</title>
   <style>
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    /* ── TOP BAR ───────────────────────────── */
+
+    .top-bar{
+        background:#1e4d7b;
+        border-bottom:1px solid #163a5f;
+        height:56px;
+
+        display:flex;
+        align-items:center;
+        justify-content:center;
+
+        position:relative;
+        flex-shrink:0;
+    }
+
+    .top-bar-logo{
+        position:absolute;
+        left:20px;
+        display:flex;
+        align-items:center;
+    }
+
+    .top-bar-logo img{
+        width:40px;
+        height:40px;
+    }
+
+    .top-bar-title{
+        font-size:16px;
+        font-weight:bold;
+        color:#f0e6c8;
+    }
 
     body {
       font-family: 'Times New Roman', serif;
       font-size: 14px;
-      background: white;
+      background: #fdfcf7;
       display: flex;
       flex-direction: column;
       height: 100vh;
     }
 
+    /* ── INFO BAR ── */
     .info-bar {
-      background: #f0f0f0;
-      border-bottom: 1px solid #ccc;
+      background: #0e7c7b;
+      border-bottom: 1px solid #c9a84c;
       padding: 14px 20px;
       flex-shrink: 0;
     }
 
     .info-bar h2 {
       font-size: 20px;
+      color: #dbecff;
       font-weight: bold;
       margin-bottom: 6px;
     }
 
     .info-bar p {
       font-size: 13px;
-      color: #444;
+      color: #ffffff;
     }
 
+    /* ── TABLE AREA ── */
     .table-area {
       flex: 1;
       overflow: auto;
@@ -47,8 +82,8 @@
     }
 
     thead th {
-      background: #d4d4d4;
-      border: 1px solid #999;
+      background: #dbecff;
+      border: 1px solid #163a5f;
       padding: 8px 10px;
       text-align: left;
       font-weight: bold;
@@ -56,14 +91,14 @@
     }
 
     tbody td {
-      border: 1px solid #ccc;
+      border: 1px solid #163a5f;
       padding: 7px 10px;
       vertical-align: middle;
     }
 
-    tbody tr:hover { background: #f5f5f5; }
+    tbody tr:hover { background: #fafaeb; }
 
-
+    /* ── ACTION BUTTONS ── */
     .open-btn,
     .edit-btn,
     .delete-btn,
@@ -74,12 +109,12 @@
       font-size: 12px;
       font-weight: bold;
       cursor: pointer;
-      border: 1px solid #999;
-      background: #d4d4d4;
+      border: 1px solid #163a5f;
+      background: #f4f7fa;
       margin-right: 3px;
     }
 
-    .open-btn:hover   { background: #c0c0c0; }
+    .open-btn:hover   { background: #0e7c7b; }
     .edit-btn         { border-color: #0066cc; color: #0066cc; }
     .edit-btn:hover   { background: #e0eeff; }
     .delete-btn       { border-color: #c00; color: #c00; }
@@ -93,6 +128,7 @@
       opacity: 0.5;
     }
 
+    /* ── INLINE EDIT ROW ── */
     .edit-row td {
       background: #f5f8ff;
       border: 1px solid #99b3dd;
@@ -113,6 +149,7 @@
       outline: 1px solid #0066cc;
     }
 
+    /* ── STATES ── */
     .empty-row td {
       text-align: center;
       color: #888;
@@ -135,9 +172,10 @@
       font-weight: bold;
     }
 
+    /* ── BOTTOM BAR ── */
     .bottom-bar {
-      background: #f0f0f0;
-      border-top: 1px solid #ccc;
+      background: #1e4d7b;
+      border-top: 1px solid #c9a84c;
       padding: 10px 20px;
       display: flex;
       gap: 10px;
@@ -150,21 +188,35 @@
       font-size: 14px;
       font-weight: bold;
       cursor: pointer;
+      color: #ffffff;
       border: 1px solid #999;
-      background: #d4d4d4;
+      background: #0e7c7b;
     }
-    .bottom-bar button:hover { background: #c0c0c0; }
+    .bottom-bar button:hover { background: #c9a84c; }
 
   </style>
 </head>
 <body>
+  <!-- TOP BAR -->
+  <div class="top-bar">
 
+    <div class="top-bar-logo">
+        <img src="logo.svg" alt="Logo">
+    </div>
 
+    <div class="top-bar-title">
+        DSQA Document Tracebility and Configuration Management Tool
+    </div>
+
+  </div>
+
+  <!-- INFO BAR -->
   <div class="info-bar">
     <h2>Search Results</h2>
     <p id="search-info">Loading...</p>
   </div>
 
+  <!-- TABLE -->
   <div class="table-area">
     <div class="loading" id="loading">Searching...</div>
     <div class="error-box" id="error-box">
@@ -179,6 +231,7 @@
           <th>Sub System</th>
           <th>Mission</th>
           <th>Document Type</th>
+          <th>Document Number</th>
           <th>Version</th>
           <th>Version Date</th>
           <th>Submission Date</th>
@@ -190,6 +243,7 @@
     </table>
   </div>
 
+  <!-- BOTTOM BAR -->
   <div class="bottom-bar">
     <button onclick="window.close()">Close</button>
   </div>
@@ -198,7 +252,7 @@
 
     const SERVER_URL = window.location.origin;
 
-
+    // ── Read URL parameters ───────────────────────
     const params      = new URLSearchParams(window.location.search);
     const projectName = params.get('projectName') || '';
     const subsystem   = params.get('subsystem')   || '';
@@ -214,6 +268,7 @@
       '   |   Version: '    + version     +
       '   |   Document: '   + docType;
 
+    // ── Load results ──────────────────────────────
     async function loadResults() {
       try {
         const query = new URLSearchParams({
@@ -250,6 +305,7 @@
       }
     }
 
+    // ── Build one table row ───────────────────────
     function buildRow(row) {
       const tbody = document.getElementById('results-body');
       const tr    = document.createElement('tr');
@@ -261,6 +317,7 @@
         <td>${row.projectSubsystem || ''}</td>
         <td>${row.mission          || ''}</td>
         <td>${row.docType          || ''}</td>
+        <td>${row.docNumber        || ''}</td>
         <td>${row.version          || ''}</td>
         <td>${row.versionDate      || ''}</td>
         <td>${row.submissionDate   || ''}</td>
@@ -269,6 +326,7 @@
 
       const actionCell = tr.children[tr.children.length - 1];
 
+      // ── Open button — both user and admin ────────
       const openBtn       = document.createElement('button');
       openBtn.className   = 'open-btn';
       openBtn.textContent = 'Open';
@@ -296,6 +354,7 @@
       }
       actionCell.appendChild(openBtn);
 
+      // ── Edit button — admin only ──────────────────
       if (role === 'admin') {
         const editBtn       = document.createElement('button');
         editBtn.className   = 'edit-btn';
@@ -308,6 +367,7 @@
         actionCell.appendChild(editBtn);
       }
 
+      // ── Delete button — admin only ────────────────
       if (role === 'admin') {
         const delBtn       = document.createElement('button');
         delBtn.className   = 'delete-btn';
@@ -345,14 +405,14 @@
       tbody.appendChild(tr);
     }
 
-
+    // ── Show inline edit row below the clicked row ─
     function showEditRow(tr, row) {
 
-  
+      // If an edit row is already open anywhere, remove it first
       const existingEdit = document.querySelector('.edit-row');
       if (existingEdit) existingEdit.remove();
 
-
+      // Create the edit row
       const editTr = document.createElement('tr');
       editTr.className = 'edit-row';
 
@@ -380,16 +440,18 @@
           <button class="cancel-btn" id="cancel-btn">Cancel</button>
         </td>`;
 
-      
+      // Insert the edit row directly below the clicked row
       tr.insertAdjacentElement('afterend', editTr);
-   
- 
+
+      // Focus the first field
       document.getElementById('edit-projectName').focus();
 
+      // ── Cancel button ─────────────────────────
       document.getElementById('cancel-btn').addEventListener('click', () => {
         editTr.remove();
       });
 
+      // ── Save button ───────────────────────────
       document.getElementById('save-btn').addEventListener('click', async () => {
 
         const newProjectName = document.getElementById('edit-projectName').value.trim();
@@ -439,7 +501,7 @@
         }
       });
 
-
+      // Allow pressing Enter to save
       editTr.querySelectorAll('input').forEach(input => {
         input.addEventListener('keydown', e => {
           if (e.key === 'Enter')  document.getElementById('save-btn').click();
