@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Project Document Browser</title>
-  <style>
-
+  <title>DSQA Document Tracebility and Configuration Management Tool</title>
+<style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
@@ -15,34 +14,60 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      background: #f4f6f9;
+      color: #1a1a2e;
     }
-    
+
+    /* ── TOP BAR ── */
     .top-bar {
-      background: #f0f0f0;
-      border-bottom: 1px solid #ccc;
-      padding: 10px 20px;
+      background: #1e4d7b;
+      border-bottom: 3px solid #c9a84c;
+      padding: 8px 20px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      font-size: 16px;
-      font-weight: bold;
       flex-shrink: 0;
+      position: relative;
+      height: 56px;
     }
 
-    .top-bar-title { flex: 1; text-align: center; }
+    .top-bar-logo {
+      position: absolute;
+      left: 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    .top-bar-logo img {
+      height: 40px;
+      width: 40px;
+    }
+
+    .top-bar-title {
+      flex: 1;
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+      color: #f0e6c8;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
 
     .top-bar-user {
-      font-size: 13px;
-      font-weight: normal;
+      position: absolute;
+      right: 20px;
       display: flex;
       align-items: center;
       gap: 12px;
+      font-size: 13px;
+      font-weight: normal;
+      color: #d4e8e8;
     }
 
     .role-badge {
       padding: 2px 10px;
-      border: 1px solid #999;
-      background: #e8e8e8;
+      border: 1px solid #c9a84c;
+      background: #163a5f;
+      color: #c9a84c;
       font-size: 12px;
       font-weight: bold;
       text-transform: capitalize;
@@ -54,56 +79,71 @@
       font-size: 13px;
       font-weight: bold;
       cursor: pointer;
-      border: 1px solid #999;
-      background: #d4d4d4;
+      border: 1px solid #c9a84c;
+      background: #c9a84c;
+      color: #ffffff;
     }
-    .logout-btn:hover { background: #c0c0c0; }
+    .logout-btn:hover { background: #0b5e5d; }
 
+    /* ── MAIN LAYOUT ── */
     .main {
       display: flex;
       flex: 1;
       overflow: hidden;
     }
 
-    
+    /* ── LEFT PANEL ── */
     .left-panel {
       width: 200px;
-      background: #e8e8e8;
-      border-right: 2px solid #ccc;
+      background: #163a5f;
+      border-right: 2px solid #c9a84c;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 20px 10px;
-      gap: 12px;
+      gap: 10px;
       flex-shrink: 0;
     }
 
     .left-panel button {
-      width: 160px;
-      padding: 8px 10px;
+      width: 165px;
+      padding: 9px 10px;
       font-family: 'Times New Roman', serif;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: bold;
       cursor: pointer;
-      background: #d4d4d4;
-      border: 1px solid #999;
+      background: #1e4d7b;
+      border: 1px solid #c9a84c;
+      color: #d4e8e8;
+      text-align: left;
+      padding-left: 14px;
+      letter-spacing: 0.3px;
     }
 
-    .left-panel button:hover { background: #c0c0c0; }
-    .left-panel button.active-btn {
-      background: #b0b0b0;
-      border: 2px solid #666;
+    .left-panel button:hover {
+      background: #c9a84c;
+      color: #ffffff;
     }
+
+    .left-panel button.active-btn {
+      background: #0e7c7b;
+      border: 1px solid #c9a84c;
+      color: #ffffff;
+      border-left: 3px solid #c9a84c;
+    }
+
+    /* ── RIGHT PANEL ── */
     .right-panel {
       flex: 1;
       overflow-y: auto;
-      background: white;
+      background: #fcfdf7;
     }
 
+    /* ── PAGES ── */
     .page { display: none; padding: 30px; }
     .page.active { display: block; }
 
-    
+    /* ── WELCOME ── */
     .welcome-page {
       display: none;
       height: 100%;
@@ -113,14 +153,22 @@
     }
     .welcome-page.active { display: flex; }
     .welcome-page h1 {
-      font-size: 40px;
+      font-size: 38px;
       font-weight: bold;
+      color: #1e4d7b;
+      letter-spacing: 1px;
     }
 
+    /* ── FORM ── */
     .page h2 {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: bold;
       margin-bottom: 20px;
+      color: #1e4d7b;
+      border-bottom: 2px solid #c9a84c;
+      padding-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .form-group { margin-bottom: 12px; }
@@ -128,8 +176,11 @@
     .form-group label {
       display: block;
       font-weight: bold;
-      font-size: 14px;
+      font-size: 13px;
       margin-bottom: 4px;
+      color: #1e4d7b;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
     }
 
     .form-group input,
@@ -139,15 +190,28 @@
       font-family: 'Times New Roman', serif;
       font-size: 13px;
       padding: 4px 8px;
-      border: 1px solid #999;
-      background: white;
+      border: 1px solid #c8cfd8;
+      background: #ffffff;
+      color: #1a1a2e;
     }
 
     .form-group input:focus,
-    .form-group select:focus { outline: 1px solid #666; }
+    .form-group select:focus {
+      outline: none;
+      border: 1px solid #0e7c7b;
+      box-shadow: 0 0 0 2px rgba(14, 124, 123,0.15);
+    }
 
+    /* ── TWO COLUMN FORM LAYOUT ── */
+    .form-two-col {
+      display: flex;
+      gap: 60px;
+      align-items: flex-start;
+    }
 
-    
+    .form-col { display: flex; flex-direction: column; }
+
+    /* ── FILE ROW ── */
     .file-row { display: flex; align-items: center; gap: 8px; }
 
     .file-name-display {
@@ -156,8 +220,8 @@
       font-family: 'Times New Roman', serif;
       font-size: 13px;
       padding: 4px 8px;
-      border: 1px solid #999;
-      background: #f5f5f5;
+      border: 1px solid #c8cfd8;
+      background: #eef1f5;
       color: #555;
       display: flex;
       align-items: center;
@@ -169,57 +233,143 @@
       height: 30px;
       padding: 0 12px;
       font-family: 'Times New Roman', serif;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: bold;
       cursor: pointer;
-      border: 1px solid #999;
-      background: #d4d4d4;
+      border: 1px solid #1e4d7b;
+      background: #0e7c7b;
+      color: #ffffff;
     }
-    .file-row button:hover { background: #c0c0c0; }
+    .file-row button:hover { background: #0b5e5d; }
 
-    
+    /* ── BUTTONS ── */
     .btn {
       margin-top: 16px;
-      padding: 7px 20px;
+      padding: 8px 24px;
       font-family: 'Times New Roman', serif;
       font-size: 14px;
       font-weight: bold;
       cursor: pointer;
-      border: 1px solid #999;
-      background: #d4d4d4;
+      border: 1px solid #c9a84c;
+      background: #1e4d7b;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
     }
-    .btn:hover { background: #c0c0c0; }
-    .btn:disabled { cursor: not-allowed; opacity: 0.6; }
+    .btn:hover { background: #0e7c7b; }
+    .btn:disabled { cursor: not-allowed; opacity: 0.5; }
 
+    /* ── MESSAGES ── */
     .success-msg {
       display: none;
       margin-top: 14px;
-      color: green;
+      color: #1a6b2a;
       font-weight: bold;
+      background: #e8f5eb;
+      padding: 8px 12px;
+      border: 1px solid #a8d5b0;
+      max-width: 400px;
     }
     .error-msg {
       display: none;
       margin-top: 14px;
-      color: red;
+      color: #8b0000;
       font-weight: bold;
+      background: #fdecea;
+      padding: 8px 12px;
+      border: 1px solid #e8a8a8;
+      max-width: 400px;
     }
 
-    
-    .loading-hint {
+    /* ── USER TABLE ── */
+    .user-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      font-size: 13px;
+    }
+
+    .user-table th {
+      background: #1e4d7b;
+      border: 1px solid #163a5f;
+      padding: 9px 12px;
+      text-align: left;
+      font-weight: bold;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .user-table td {
+      border: 1px solid #c8cfd8;
+      padding: 8px 12px;
+      vertical-align: middle;
+      background: #ffffff;
+    }
+
+    .user-table tr:hover td { background: #eef3f9; }
+
+    .user-edit-input {
+      width: 130px;
+      height: 26px;
+      font-family: 'Times New Roman', serif;
       font-size: 12px;
-      color: #888;
-      font-style: italic;
-      margin-top: 4px;
+      padding: 2px 6px;
+      border: 1px solid #c8cfd8;
     }
 
-  </style>
+    .user-edit-select {
+      height: 26px;
+      font-family: 'Times New Roman', serif;
+      font-size: 12px;
+      padding: 2px 4px;
+      border: 1px solid #c8cfd8;
+    }
+
+    .btn-sm {
+      padding: 3px 10px;
+      font-family: 'Times New Roman', serif;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      border: 1px solid #0e7c7b;
+      background: #1e4d7b;
+      color: #ffffff;
+      margin-right: 3px;
+    }
+    .btn-sm:hover       { background: #0e7c7b; }
+    .btn-sm-red         { border-color: #8b0000; background: #8b0000; color: #fff; }
+    .btn-sm-red:hover   { background: #a00000; }
+    .btn-sm-green       { border-color: #1a6b2a; background: #1a6b2a; color: #fff; }
+    .btn-sm-green:hover { background: #228b36; }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #c8cfd8;
+      margin: 20px 0;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      background: #163a5f;
+      border-top: 2px solid #c9a84c;
+      padding: 7px 20px;
+      text-align: right;
+      font-size: 12px;
+      color: #c9a84c;
+      font-family: 'Times New Roman', serif;
+      letter-spacing: 0.3px;
+    }
+</style>
 </head>
 <body>
 
-
+  <!-- TOP BAR -->
   <div class="top-bar">
-    <div style="width:200px"></div>
-    <div class="top-bar-title">Project Document Browser</div>
+    <div class="top-bar-logo">
+      <img src="logo.png" alt="Logo"/>
+    </div>
+    <div class="top-bar-title">DSQA Document Tracebility and Configuration Management Tool</div>
     <div class="top-bar-user">
       <span id="display-username"></span>
       <span class="role-badge" id="display-role"></span>
@@ -227,70 +377,82 @@
     </div>
   </div>
 
+  <!-- MAIN -->
   <div class="main">
 
-   
+    <!-- LEFT PANEL -->
     <div class="left-panel">
-      
+
+      <!-- Both roles -->
       <button id="btn-search" onclick="showPage('search', this)">
         Search Project
       </button>
+
+      <!-- User only -->
       <button id="btn-add" onclick="showPage('add', this)"
               style="display:none">
         Add Files
       </button>
+
+      <!-- Admin only -->
+      <button id="btn-addproject" onclick="showPage('addproject', this)"
+              style="display:none">
+        Add Project
+      </button>
+      <button id="btn-users" onclick="showPage('users', this)"
+              style="display:none">
+        Manage Users
+      </button>
+      <button id="btn-viewusers" onclick="showPage('viewusers', this)"
+              style="display:none">
+        View Users
+      </button>
+
     </div>
 
+    <!-- RIGHT PANEL -->
     <div class="right-panel">
 
-
+      <!-- WELCOME -->
       <div class="welcome-page active" id="page-welcome">
         <div>
-          <h1>Project Document Browser</h1>
+          <h1>DSQA Document Tracebility and Configuration Management Tool</h1>
           <p id="welcome-msg"
              style="margin-top:14px;font-size:16px;color:#555;text-align:center;">
           </p>
         </div>
       </div>
 
-      
+      <!-- ══════════════════════════
+           SEARCH PAGE
+      ══════════════════════════ -->
       <div class="page" id="page-search">
         <h2>Search Project</h2>
 
         <div class="form-group">
           <label>Project Name</label>
-
-     
-          <select id="s-projectName-dropdown" style="display:none">
-            <option value="">-- Select Project --</option>
+          <select id="s-projectName">
+            <option value="">-- Select --</option>
           </select>
-
-          <input type="text" id="s-projectName-text"/>
-
-          <div class="loading-hint" id="s-projectName-hint"
-               style="display:none">
-            Loading projects...
-          </div>
         </div>
 
         <div class="form-group">
           <label>Sub System</label>
-          <select id="s-subsystem-dropdown" style="display:none">
-            <option value="">-- Select Sub System --</option>
+          <select id="s-subsystem">
+            <option value="">-- Select --</option>
           </select>
-
-          <input type="text" id="s-subsystem-text"/>
         </div>
-
 
         <div class="form-group">
           <label>Mission</label>
-
-          <select id="s-mission-dropdown" style="display:none">
-            <option value="">-- Select Mission --</option>
+          <select id="s-mission">
+            <option value="">-- Select --</option>
           </select>
+        </div>
 
-          <input type="text" id="s-mission-text"/>
+        <div class="form-group">
+          <label>Document Number</label>
+          <input type="text" id="s-docNumber"/>
         </div>
 
         <div class="form-group">
@@ -311,101 +473,218 @@
             <option>Reply Report</option>
             <option>Certificates</option>
             <option>Technical Notes</option>
+            <option>Submission Note</option>
           </select>
         </div>
 
         <button class="btn" onclick="runSearch()">Search</button>
 
         <div class="error-msg" id="search-error">
-          Please select or enter a Project Name to search.
+          Please select a Project Name to search.
         </div>
       </div>
 
- 
+      <!-- ══════════════════════════
+           ADD FILES PAGE — user only
+      ══════════════════════════ -->
       <div class="page" id="page-add">
         <h2>Add File</h2>
 
+        <div class="form-two-col">
+
+        <!-- LEFT COLUMN — admin managed fields -->
+        <div class="form-col">
+
+          <div class="form-group">
+            <label>Project Name</label>
+            <select id="a-projectName">
+              <option value="">-- Select --</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Sub System</label>
+            <select id="a-subsystem">
+              <option value="">-- Select --</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Mission</label>
+            <select id="a-mission">
+              <option value="">-- Select --</option>
+            </select>
+          </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN — other fields -->
+        <div class="form-col">
+
+          <div class="form-group">
+            <label>Document Type</label>
+            <select id="a-docType">
+              <option value="">-- Select --</option>
+              <option>SRS</option>
+              <option>SDD</option>
+              <option>ICD</option>
+              <option>Change Note</option>
+              <option>Resource List</option>
+              <option>Observation Reports</option>
+              <option>Reply Report</option>
+              <option>Certificates</option>
+              <option>Technical Notes</option>
+              <option>Submission Note</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Document Number</label>
+            <input type="text" id="a-docNumber"/>
+          </div>
+
+          <div class="form-group">
+            <label>Version</label>
+            <input type="text" id="a-version"/>
+          </div>
+
+          <div class="form-group">
+            <label>Version Date</label>
+            <input type="date" id="a-versionDate" style="width:300px;"/>
+          </div>
+
+          <div class="form-group">
+            <label>Submission Date</label>
+            <input type="date" id="a-submissionDate" style="width:300px;"/>
+          </div>
+
+          <div class="form-group">
+            <label>File</label>
+            <div class="file-row">
+              <div class="file-name-display" id="a-fileNameDisplay">
+                No file selected
+              </div>
+              <button onclick="document.getElementById('file-input').click()">
+                Browse
+              </button>
+            </div>
+            <input type="file" id="file-input" style="display:none"
+                  accept=".pdf,.doc,.docx,.xlsx,.pptx"
+                  onchange="handleFilePick(this)"/>
+          </div>
+          <button class="btn" id="submit-btn" onclick="submitDoc()">
+          Submit
+        </button>
+
+        <div class="success-msg" id="add-success">Document added successfully!</div>
+        <div class="error-msg"   id="add-error">Please fill in Project Name and Sub System.</div>
+      </div>
+
+
+
+      </div>
+    </div>
+
+      <!-- ══════════════════════════
+           ADD PROJECT — admin only
+      ══════════════════════════ -->
+      <div class="page" id="page-addproject">
+        <h2>Add Project</h2>
+
         <div class="form-group">
           <label>Project Name</label>
-          <input type="text" id="a-projectName"/>
+          <input type="text" id="ap-projectName"/>
         </div>
 
         <div class="form-group">
           <label>Sub System</label>
-          <input type="text" id="a-subsystem"/>
+          <input type="text" id="ap-subsystem"/>
         </div>
 
         <div class="form-group">
           <label>Mission</label>
-          <input type="text" id="a-mission"/>
+          <input type="text" id="ap-mission"/>
         </div>
 
-        <div class="form-group">
-          <label>Document Type</label>
-          <select id="a-docType">
-            <option value="">-- Select --</option>
-            <option>SRS</option>
-            <option>SDD</option>
-            <option>ICD</option>
-            <option>Change Note</option>
-            <option>Resource List</option>
-            <option>Observation Reports</option>
-            <option>Reply Report</option>
-            <option>Certificates</option>
-            <option>Technical Notes</option>
-          </select>
-        </div>
+        <button class="btn" onclick="submitProject()">Add Project</button>
 
-        <div class="form-group">
-          <label>Version</label>
-          <input type="text" id="a-version"/>
-        </div>
+        <div class="success-msg" id="ap-success">Project added successfully!</div>
+        <div class="error-msg"   id="ap-error">Please fill in Project Name and Sub System.</div>
+      </div>
 
-        <div class="form-group">
-          <label>Version Date</label>
-          <input type="date" id="a-versionDate" style="width:300px;"/>
-        </div>
+      <!-- ══════════════════════════
+           MANAGE USERS — admin only
+      ══════════════════════════ -->
+      <div class="page" id="page-users">
+        <h2>Manage Users</h2>
 
-        <div class="form-group">
-          <label>Submission Date</label>
-          <input type="date" id="a-submissionDate" style="width:300px;"/>
-        </div>
+        <div style="max-width:500px;">
+          <h3 style="font-size:15px; margin-bottom:12px;">Add New User</h3>
 
-        <div class="form-group">
-          <label>File</label>
-          <div class="file-row">
-            <div class="file-name-display" id="a-fileNameDisplay">
-              No file selected
-            </div>
-            <button onclick="document.getElementById('file-input').click()">
-              Browse
-            </button>
+          <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="new-username"/>
           </div>
-          <input type="file" id="file-input" style="display:none"
-                 accept=".pdf,.doc,.docx,.xlsx,.pptx"
-                 onchange="handleFilePick(this)"/>
-        </div>
 
-        <button class="btn" id="submit-btn" onclick="submitDoc()">
-          Submit
-        </button>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="new-password"/>
+          </div>
 
-        <div class="success-msg" id="add-success">
-          Document added successfully!
-        </div>
-        <div class="error-msg" id="add-error">
-          Please fill in Project Name and Sub System.
+          <div class="form-group">
+            <label>Role</label>
+            <select id="new-role" style="width:300px; height:30px;">
+              <option value="user">User</option>
+              <option value="admin">Administrator</option>
+            </select>
+          </div>
+
+          <button class="btn" onclick="addUser()">Add User</button>
+
+          <div class="success-msg" id="user-success"></div>
+          <div class="error-msg"   id="user-error"></div>
         </div>
       </div>
 
+      <!-- ══════════════════════════
+           VIEW USERS — admin only
+      ══════════════════════════ -->
+      <div class="page" id="page-viewusers">
+        <h2>View Users</h2>
+
+        <table class="user-table">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Role</th>
+              <th>New Password</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="users-body">
+            <tr>
+              <td colspan="4"
+                  style="text-align:center; color:#888; padding:20px;">
+                Loading...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
     </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    DSQA&nbsp;|&nbsp;DRDO
   </div>
 
   <script>
 
     const SERVER_URL = window.location.origin;
 
-    // session check
+    // ── Session check ─────────────────────────────
     const username = sessionStorage.getItem('username');
     const role     = sessionStorage.getItem('role');
 
@@ -413,131 +692,127 @@
       window.location.href = 'login.html';
     }
 
+    // ── Top bar ───────────────────────────────────
     document.getElementById('display-username').textContent = username;
     document.getElementById('display-role').textContent     = role;
+    document.getElementById('welcome-msg').textContent = '.';
 
-
+    // ── Show buttons based on role ────────────────
     if (role === 'user') {
-
-
       document.getElementById('btn-add').style.display = 'block';
-
-      document.getElementById('s-projectName-dropdown').style.display = 'block';
-      document.getElementById('s-subsystem-dropdown').style.display   = 'block';
-      document.getElementById('s-mission-dropdown').style.display     = 'block';
-      document.getElementById('s-projectName-text').style.display     = 'none';
-      document.getElementById('s-subsystem-text').style.display       = 'none';
-      document.getElementById('s-mission-text').style.display         = 'none';
-
-      loadDropdownOptions();
-
-    } else {
-
-      document.getElementById('s-projectName-dropdown').style.display = 'block';
-      document.getElementById('s-subsystem-dropdown').style.display   = 'block';
-      document.getElementById('s-mission-dropdown').style.display     = 'block';
-      document.getElementById('s-projectName-text').style.display     = 'none';
-      document.getElementById('s-subsystem-text').style.display       = 'none';
-      document.getElementById('s-mission-text').style.display         = 'none';
-
-      loadDropdownOptions();
+    }
+    if (role === 'admin') {
+      document.getElementById('btn-addproject').style.display = 'block';
+      document.getElementById('btn-users').style.display      = 'block';
+      document.getElementById('btn-viewusers').style.display  = 'block';
     }
 
 
-    async function loadDropdownOptions() {
-
-      document.getElementById('s-projectName-hint').style.display = 'block';
+    // Reusable: fill subsystem + mission for a project
+    async function fillSubMission(projectName, subEl, misEl) {
+      subEl.innerHTML = '<option value="">-- Select --</option>';
+      misEl.innerHTML = '<option value="">-- Select --</option>';
+      if (!projectName) return;
 
       try {
-        const response = await fetch(SERVER_URL + '/get-projects');
-        if (!response.ok) throw new Error('Server error');
+        const response = await fetch(
+          SERVER_URL + '/get-project-details?projectName=' +
+          encodeURIComponent(projectName)
+        );
+        const data = await response.json();
 
-        const projects = await response.json();
-
-        const projectNames = [...new Set(projects.map(p => p.projectName).filter(Boolean))];
-        const subsystems   = [...new Set(projects.map(p => p.subsystem).filter(Boolean))];
-        const missions     = [...new Set(projects.map(p => p.mission).filter(Boolean))];
-
-        const projDropdown = document.getElementById('s-projectName-dropdown');
-        projectNames.forEach(name => {
+        data.subsystems.forEach(sub => {
           const opt = document.createElement('option');
-          opt.value       = name;
-          opt.textContent = name;
-          projDropdown.appendChild(opt);
+          opt.value = opt.textContent = sub;
+          subEl.appendChild(opt);
         });
 
-        const subDropdown = document.getElementById('s-subsystem-dropdown');
-        subsystems.forEach(sub => {
+        data.missions.forEach(mis => {
           const opt = document.createElement('option');
-          opt.value       = sub;
-          opt.textContent = sub;
-          subDropdown.appendChild(opt);
+          opt.value = opt.textContent = mis;
+          misEl.appendChild(opt);
         });
-
-
-        const misDropdown = document.getElementById('s-mission-dropdown');
-        missions.forEach(mis => {
-          const opt = document.createElement('option');
-          opt.value       = mis;
-          opt.textContent = mis;
-          misDropdown.appendChild(opt);
-        });
-
-        document.getElementById('s-projectName-hint').style.display = 'none';
 
       } catch (err) {
-        document.getElementById('s-projectName-hint').textContent =
-          'Could not load projects. Make sure server is running.';
-        console.error('Dropdown load error:', err);
+        console.error('fillSubMission error:', err);
       }
     }
 
-    function getSearchValues() {
+    // Load projects into a dropdown
+    async function loadProjectsInto(dropdownId) {
+      try {
+        const response = await fetch(SERVER_URL + '/get-projects');
+        const projects = await response.json();
+        const dropdown = document.getElementById(dropdownId);
+        dropdown.innerHTML = '<option value="">-- Select --</option>';
+        projects.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = opt.textContent = p.projectName;
+          dropdown.appendChild(opt);
+        });
+      } catch (err) {
+        console.error('loadProjectsInto error:', err);
+      }
+    }
+
+    (async function init() {
+
+      await loadProjectsInto('s-projectName');
+
       if (role === 'user') {
-        return {
-          projectName: document.getElementById('s-projectName-dropdown').value,
-          subsystem  : document.getElementById('s-subsystem-dropdown').value,
-          mission    : document.getElementById('s-mission-dropdown').value
-        };
-      } else {
-        return {
-          projectName: document.getElementById('s-projectName-text').value.trim(),
-          subsystem  : document.getElementById('s-subsystem-text').value.trim(),
-          mission    : document.getElementById('s-mission-text').value.trim()
-        };
+        await loadProjectsInto('a-projectName');
       }
-    }
+    })();
 
-
-    function logout() {
-      sessionStorage.clear();
-      window.location.href = 'login.html';
-    }
+    document.getElementById('s-projectName').addEventListener('change', function () {
+      fillSubMission(
+        this.value,
+        document.getElementById('s-subsystem'),
+        document.getElementById('s-mission')
+      );
+    });
+    document.getElementById('a-projectName').addEventListener('change', function () {
+      fillSubMission(
+        this.value,
+        document.getElementById('a-subsystem'),
+        document.getElementById('a-mission')
+      );
+    });
 
     function showPage(name, clickedBtn) {
-      document.getElementById('page-welcome').classList.remove('active');
-      document.getElementById('page-search').classList.remove('active');
-      document.getElementById('page-add').classList.remove('active');
+      ['welcome','search','add','addproject','users','viewusers'].forEach(p => {
+        document.getElementById('page-' + p).classList.remove('active');
+      });
       document.getElementById('page-' + name).classList.add('active');
       document.querySelectorAll('.left-panel button')
               .forEach(b => b.classList.remove('active-btn'));
       clickedBtn.classList.add('active-btn');
       hideMessages();
+      if (name === 'viewusers') loadUsers();
+    }
+
+    // Logout
+    function logout() {
+      sessionStorage.clear();
+      window.location.href = 'login.html';
     }
 
     function runSearch() {
-      const { projectName, subsystem, mission } = getSearchValues();
-      const version = document.getElementById('s-version').value.trim();
-      const docType = document.getElementById('s-docType').value;
+      const projectName = document.getElementById('s-projectName').value;
+      const subsystem   = document.getElementById('s-subsystem').value;
+      const mission     = document.getElementById('s-mission').value;
+      const docNumber   = document.getElementById('s-docNumber').value.trim();
+      const version     = document.getElementById('s-version').value.trim();
+      const docType     = document.getElementById('s-docType').value;
 
-      if (projectName === '') {
+      if (!projectName) {
         document.getElementById('search-error').style.display = 'block';
         return;
       }
       document.getElementById('search-error').style.display = 'none';
 
       const params = new URLSearchParams({
-        projectName, subsystem, mission, version, docType, role
+        projectName, subsystem, mission, version, docNumber, docType, role
       });
 
       window.open(
@@ -552,21 +827,21 @@
     function handleFilePick(input) {
       if (input.files && input.files[0]) {
         selectedFile = input.files[0];
-        document.getElementById('a-fileNameDisplay').textContent =
-          selectedFile.name;
+        document.getElementById('a-fileNameDisplay').textContent = selectedFile.name;
       }
     }
 
     async function submitDoc() {
-      const projectName    = document.getElementById('a-projectName').value.trim();
-      const subsystem      = document.getElementById('a-subsystem').value.trim();
-      const mission        = document.getElementById('a-mission').value.trim();
+      const projectName    = document.getElementById('a-projectName').value;
+      const subsystem      = document.getElementById('a-subsystem').value;
+      const mission        = document.getElementById('a-mission').value;
       const docType        = document.getElementById('a-docType').value;
+      const docNumber      = document.getElementById('a-docNumber').value.trim();
       const version        = document.getElementById('a-version').value.trim();
       const versionDate    = document.getElementById('a-versionDate').value;
       const submissionDate = document.getElementById('a-submissionDate').value;
 
-      if (projectName === '' || subsystem === '') {
+      if (!projectName || !subsystem) {
         document.getElementById('add-error').style.display   = 'block';
         document.getElementById('add-success').style.display = 'none';
         return;
@@ -578,14 +853,12 @@
       formData.append('subsystem',      subsystem);
       formData.append('mission',        mission);
       formData.append('docType',        docType);
+      formData.append('docNumber',      docNumber);
       formData.append('version',        version);
       formData.append('versionDate',    versionDate);
       formData.append('submissionDate', submissionDate);
       formData.append('uploadedBy',     username);
-
-      if (selectedFile) {
-        formData.append('file', selectedFile);
-      }
+      if (selectedFile) formData.append('file', selectedFile);
 
       const btn = document.getElementById('submit-btn');
       btn.disabled    = true;
@@ -604,67 +877,241 @@
             document.getElementById('add-success').style.display = 'none';
           }, 3000);
           clearAddForm();
-
-     
-          if (role === 'user') refreshDropdowns();
-
         } else {
           alert('Error: ' + (result.error || 'Could not add document.'));
         }
-
       } catch (err) {
-        alert('Could not connect to server. Make sure node server.js is running.');
+        alert('Could not connect to server.');
       } finally {
         btn.disabled    = false;
         btn.textContent = 'Submit';
       }
     }
 
-    async function refreshDropdowns() {
-      try {
-        const response = await fetch(SERVER_URL + '/get-projects');
-        const projects = await response.json();
-
-        const projectNames = [...new Set(projects.map(p => p.projectName).filter(Boolean))];
-        const subsystems   = [...new Set(projects.map(p => p.subsystem).filter(Boolean))];
-        const missions     = [...new Set(projects.map(p => p.mission).filter(Boolean))];
-
-        rebuildDropdown('s-projectName-dropdown', projectNames, '-- Select Project --');
-        rebuildDropdown('s-subsystem-dropdown',   subsystems,   '-- Select Sub System --');
-        rebuildDropdown('s-mission-dropdown',     missions,     '-- Select Mission --');
-
-      } catch (err) {
-        console.error('Dropdown refresh error:', err);
-      }
-    }
-
-    function rebuildDropdown(id, values, defaultLabel) {
-      const dropdown = document.getElementById(id);
-      dropdown.innerHTML = `<option value="">${defaultLabel}</option>`;
-      values.forEach(val => {
-        const opt       = document.createElement('option');
-        opt.value       = val;
-        opt.textContent = val;
-        dropdown.appendChild(opt);
-      });
-    }
     function clearAddForm() {
-      document.getElementById('a-projectName').value    = '';
-      document.getElementById('a-subsystem').value      = '';
-      document.getElementById('a-mission').value        = '';
-      document.getElementById('a-docType').value        = '';
-      document.getElementById('a-version').value        = '';
-      document.getElementById('a-versionDate').value    = '';
-      document.getElementById('a-submissionDate').value = '';
+      document.getElementById('a-projectName').value      = '';
+      document.getElementById('a-subsystem').innerHTML    = '<option value="">-- Select --</option>';
+      document.getElementById('a-mission').innerHTML      = '<option value="">-- Select --</option>';
+      document.getElementById('a-docType').value          = '';
+      document.getElementById('a-docNumber').value        = '';
+      document.getElementById('a-version').value          = '';
+      document.getElementById('a-versionDate').value      = '';
+      document.getElementById('a-submissionDate').value   = '';
       document.getElementById('a-fileNameDisplay').textContent = 'No file selected';
-      document.getElementById('file-input').value = '';
+      document.getElementById('file-input').value         = '';
       selectedFile = null;
     }
 
+    //  add project (admin)
+    async function submitProject() {
+      const projectName = document.getElementById('ap-projectName').value.trim();
+      const subsystem   = document.getElementById('ap-subsystem').value.trim();
+      const mission     = document.getElementById('ap-mission').value.trim();
+
+      if (!projectName || !subsystem) {
+        document.getElementById('ap-error').style.display   = 'block';
+        document.getElementById('ap-success').style.display = 'none';
+        return;
+      }
+      document.getElementById('ap-error').style.display = 'none';
+
+      try {
+        const response = await fetch(SERVER_URL + '/add-project', {
+          method : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body   : JSON.stringify({ projectName, subsystem, mission })
+        });
+        const result = await response.json();
+
+        if (result.success) {
+          document.getElementById('ap-success').style.display = 'block';
+          setTimeout(() => {
+            document.getElementById('ap-success').style.display = 'none';
+          }, 3000);
+          document.getElementById('ap-projectName').value = '';
+          document.getElementById('ap-subsystem').value   = '';
+          document.getElementById('ap-mission').value     = '';
+          // Refresh search and add files dropdowns
+          await loadProjectsInto('s-projectName');
+          if (role === 'user') await loadProjectsInto('a-projectName');
+        } else {
+          alert('Error: ' + (result.error || 'Could not add project.'));
+        }
+      } catch (err) {
+        alert('Could not connect to server.');
+      }
+    }
+
+    //  management (admin only)
+    async function loadUsers() {
+      const tbody = document.getElementById('users-body');
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#888;padding:20px;">Loading...</td></tr>';
+
+      try {
+        const response = await fetch(SERVER_URL + '/get-users');
+        const users    = await response.json();
+        tbody.innerHTML = '';
+
+        if (users.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#888;">No users found.</td></tr>';
+          return;
+        }
+
+        users.forEach(user => buildUserRow(user));
+
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:red;">Could not load users.</td></tr>';
+        console.error('loadUsers error:', err);
+      }
+    }
+
+    function buildUserRow(user) {
+      const tbody = document.getElementById('users-body');
+      const tr    = document.createElement('tr');
+      tr.setAttribute('data-userid', user.userId);
+
+      tr.innerHTML = `
+        <td id="td-uname-${user.userId}">${user.username}</td>
+        <td id="td-urole-${user.userId}" style="text-transform:capitalize;">${user.role}</td>
+        <td></td>
+        <td></td>`;
+
+      const editBtn       = document.createElement('button');
+      editBtn.className   = 'btn-sm';
+      editBtn.textContent = 'Edit';
+      editBtn.addEventListener('click', () => showEditUserRow(tr, user));
+
+      const delBtn       = document.createElement('button');
+      delBtn.className   = 'btn-sm btn-sm-red';
+      delBtn.textContent = 'Delete';
+      delBtn.addEventListener('click', () => deleteUser(user.userId, tr));
+
+      tr.children[3].appendChild(editBtn);
+      tr.children[3].appendChild(delBtn);
+      tbody.appendChild(tr);
+    }
+
+    function showEditUserRow(tr, user) {
+      const existing = document.querySelector('.user-edit-row');
+      if (existing) existing.remove();
+
+      const editTr = document.createElement('tr');
+      editTr.className = 'user-edit-row';
+      editTr.style.background = '#f5f8ff';
+
+      editTr.innerHTML = `
+        <td><input class="user-edit-input" id="edit-uname" value="${user.username}" type="text"/></td>
+        <td>
+          <select class="user-edit-select" id="edit-urole">
+            <option value="user"  ${user.role==='user'  ?'selected':''}>User</option>
+            <option value="admin" ${user.role==='admin' ?'selected':''}>Administrator</option>
+          </select>
+        </td>
+        <td><input class="user-edit-input" id="edit-upass" type="password"/></td>
+        <td>
+          <button class="btn-sm btn-sm-green" id="save-user-btn">Save</button>
+          <button class="btn-sm"              id="cancel-user-btn">Cancel</button>
+        </td>`;
+
+      tr.insertAdjacentElement('afterend', editTr);
+      document.getElementById('edit-uname').focus();
+
+      document.getElementById('cancel-user-btn').addEventListener('click', () => editTr.remove());
+
+      document.getElementById('save-user-btn').addEventListener('click', async () => {
+        const newUsername = document.getElementById('edit-uname').value.trim();
+        const newRole     = document.getElementById('edit-urole').value;
+        const newPassword = document.getElementById('edit-upass').value.trim();
+
+        if (!newUsername) { alert('Username cannot be empty.'); return; }
+
+        try {
+          const response = await fetch(SERVER_URL + '/edit-user/' + user.userId, {
+            method : 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body   : JSON.stringify({ username: newUsername, role: newRole, password: newPassword })
+          });
+          const result = await response.json();
+
+          if (result.success) {
+            document.getElementById('td-uname-' + user.userId).textContent = newUsername;
+            document.getElementById('td-urole-' + user.userId).textContent = newRole;
+            editTr.remove();
+            showUserMsg('User updated successfully.', 'success');
+          } else {
+            alert('Could not update: ' + (result.error || 'Unknown error'));
+          }
+        } catch (err) { alert('Could not connect to server.'); }
+      });
+    }
+
+    async function deleteUser(userId, tr) {
+      if (!confirm('Are you sure you want to delete this user?')) return;
+
+      try {
+        const response = await fetch(SERVER_URL + '/delete-user/' + userId, { method: 'DELETE' });
+        const result   = await response.json();
+        if (result.success) {
+          tr.remove();
+          showUserMsg('User deleted successfully.', 'success');
+        } else {
+          alert('Could not delete: ' + (result.error || 'Unknown error'));
+        }
+      } catch (err) { alert('Could not connect to server.'); }
+    }
+
+    async function addUser() {
+      const newUsername = document.getElementById('new-username').value.trim();
+      const newPassword = document.getElementById('new-password').value.trim();
+      const newRole     = document.getElementById('new-role').value;
+
+      if (!newUsername || !newPassword) {
+        showUserMsg('Please fill in username and password.', 'error');
+        return;
+      }
+
+      try {
+        const response = await fetch(SERVER_URL + '/add-user', {
+          method : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body   : JSON.stringify({ username: newUsername, password: newPassword, role: newRole })
+        });
+        const result = await response.json();
+
+        if (result.success) {
+          document.getElementById('new-username').value = '';
+          document.getElementById('new-password').value = '';
+          document.getElementById('new-role').value     = 'user';
+          showUserMsg('User added successfully.', 'success');
+        } else {
+          showUserMsg(result.error || 'Could not add user.', 'error');
+        }
+      } catch (err) {
+        showUserMsg('Could not connect to server.', 'error');
+      }
+    }
+
+    function showUserMsg(msg, type) {
+      const s = document.getElementById('user-success');
+      const e = document.getElementById('user-error');
+      s.style.display = 'none';
+      e.style.display = 'none';
+      if (type === 'success') {
+        s.textContent   = msg;
+        s.style.display = 'block';
+        setTimeout(() => s.style.display = 'none', 3000);
+      } else {
+        e.textContent   = msg;
+        e.style.display = 'block';
+        setTimeout(() => e.style.display = 'none', 3000);
+      }
+    }
+
+    
     function hideMessages() {
-      document.getElementById('search-error').style.display  = 'none';
-      document.getElementById('add-success').style.display   = 'none';
-      document.getElementById('add-error').style.display     = 'none';
+      ['search-error','add-success','add-error','ap-success','ap-error'].forEach(id => {
+        document.getElementById(id).style.display = 'none';
+      });
     }
 
   </script>
