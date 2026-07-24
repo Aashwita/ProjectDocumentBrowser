@@ -6,22 +6,17 @@ CREATE TABLE projects (
     PRIMARY KEY (projectId)
 );
 
-CREATE TABLE documents (
-    docId INT NOT NULL AUTO_INCREMENT,
-    projectId INT NOT NULL,
-    subsystem VARCHAR(200) DEFAULT NULL,
-    docType VARCHAR(50) DEFAULT NULL,
-    version VARCHAR(50) DEFAULT NULL,
-    versionDate VARCHAR(50) DEFAULT NULL,
-    submissionDate VARCHAR(50) DEFAULT NULL,
-    filePath VARCHAR(500) DEFAULT NULL,
-    PRIMARY KEY (docId),
-    KEY (projectId),
-    CONSTRAINT fk_documents_projects
-        FOREIGN KEY (projectId)
-        REFERENCES projects(projectId)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
+CREATE TABLE IF NOT EXISTS documents (
+    docId          INT PRIMARY KEY AUTO_INCREMENT,
+    projectId      INT NOT NULL,
+    subsystem      VARCHAR(200),
+    docType        VARCHAR(50),
+    docNumber      VARCHAR(100),
+    version        VARCHAR(50),
+    versionDate    VARCHAR(50),
+    submissionDate VARCHAR(50),
+    filePath       VARCHAR(500),
+    FOREIGN KEY (projectId) REFERENCES projects(projectId)
 );
 
 CREATE TABLE users (
