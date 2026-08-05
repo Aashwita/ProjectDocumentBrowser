@@ -3,8 +3,37 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login - DSQA Document Tracebility and Configuration Management Tool</title>
+  <title>Login - DSQA Document Traceability and Configuration Management Tool</title>
   <style>
+    /* ── WATERMARK ── */
+    .center {
+    position: relative !important;
+    min-height: 400px; /* Forces container visibility */
+    }
+
+    .center::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
+        /* INCREASE THESE VALUES */
+        width: 900px;  /* Try 600px, 800px, etc. */
+        height: 900px; /* Keep height equal to width to preserve square ratio */
+
+        /* Or use percentages relative to the parent container: */
+        /* width: 80%; */
+        /* height: 80%; */
+
+        background-image: url('../logo.png'); /* Your fixed path */
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain; /* Ensures logo fits within width/height without cropping */
+        opacity: 0.10;
+        pointer-events: none;
+        z-index: 0;
+    }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -56,6 +85,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
+      overflow:hidden;
     }
 
     /* ── LOGIN BOX ── */
@@ -64,6 +95,8 @@
       border: 1px solid #163a5f;
       padding: 35px 40px;
       width: 360px;
+      position:relative;
+      z-index:1;
     }
 
     .login-box h2 {
@@ -164,9 +197,9 @@
   <!-- TOP BAR -->
   <div class="top-bar">
     <div class="top-bar-logo">
-      <img src="logo.svg" alt="Logo"/>
+      <img src="logo.png" alt="Logo"/>
     </div>
-    <div class="top-bar-title">DSQA Document Tracebility and Configuration Management Tool</div>
+    <div class="top-bar-title">DSQA Document Traceability and Configuration Management Tool</div>
   </div>
 
   <!-- CENTER -->
