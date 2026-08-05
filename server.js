@@ -13,13 +13,13 @@ app.get('/', (req, res) => {
     res.redirect('/login.html');
 });
 
-// ── Uploads
+// ── Uploads folder ────────────────────────────────
 if (!fs.existsSync('uploads')) {
     fs.mkdirSync('uploads');
 }
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// mySQL Connection
+// ── MySQL Connection ──────────────────────────────
 const db = mysql.createConnection({
     host    : process.env.DB_HOST     || 'localhost',
     user    : process.env.DB_USER     || 'root',
@@ -41,7 +41,9 @@ app.use((req, res, next) => {
     next();
 });
 
-//login
+// ═══════════════════════════════════════════════════
+//  LOGIN ROUTE
+// ═══════════════════════════════════════════════════
 app.post('/login', (req, res) => {
     const { username, password, role } = req.body;
 
@@ -65,7 +67,10 @@ app.post('/login', (req, res) => {
     );
 });
 
-//  All projects
+// ═══════════════════════════════════════════════════
+//  GET ALL PROJECTS
+//  Returns all unique project names for dropdown
+// ═══════════════════════════════════════════════════
 app.get('/get-projects', (req, res) => {
     db.query(
         'SELECT DISTINCT projectName FROM projects ORDER BY projectName',
@@ -76,7 +81,11 @@ app.get('/get-projects', (req, res) => {
     );
 });
 
-//project details
+// ═══════════════════════════════════════════════════
+//  GET PROJECT DETAILS
+//  Returns subsystems and missions for a specific project
+//  Called when user selects a project from dropdown
+// ═══════════════════════════════════════════════════
 app.get('/get-project-details', (req, res) => {
     const projectName = req.query.projectName || '';
 
@@ -101,7 +110,9 @@ app.get('/get-project-details', (req, res) => {
     );
 });
 
-//search
+// ═══════════════════════════════════════════════════
+//  SEARCH ROUTE
+// ═══════════════════════════════════════════════════
 app.get('/search', (req, res) => {
 
     const projectName = req.query.projectName || '';
@@ -177,7 +188,9 @@ app.get('/search', (req, res) => {
     });
 });
 
-//doc add
+// ═══════════════════════════════════════════════════
+//  ADD DOCUMENT ROUTE
+// ═══════════════════════════════════════════════════
 function parseMultipart(req, callback) {
     const contentType = req.headers['content-type'] || '';
     const match = contentType.match(/boundary=(-+\w+)/);
@@ -283,7 +296,10 @@ app.post('/add-document', (req, res) => {
         }
     });
 });
-// delete route
+
+// ═══════════════════════════════════════════════════
+//  DELETE DOCUMENT ROUTE
+// ═══════════════════════════════════════════════════
 app.delete('/delete-document/:docId', (req, res) => {
     const docId = req.params.docId;
     db.query('SELECT filePath FROM documents WHERE docId = ?', [docId], (err, rows) => {
@@ -302,8 +318,9 @@ app.delete('/delete-document/:docId', (req, res) => {
     });
 });
 
-//  update project route
-
+// ═══════════════════════════════════════════════════
+//  UPDATE PROJECT ROUTE
+// ═══════════════════════════════════════════════════
 app.put('/update-project/:projectId', (req, res) => {
     const projectId = req.params.projectId;
     const { projectName, subsystem, mission } = req.body;
@@ -322,8 +339,9 @@ app.put('/update-project/:projectId', (req, res) => {
     );
 });
 
-//  view file route
-
+// ═══════════════════════════════════════════════════
+//  VIEW FILE ROUTE
+// ═══════════════════════════════════════════════════
 app.get('/view-file/:filename', (req, res) => {
     const filePath = path.join(__dirname, 'uploads', req.params.filename);
     if (!fs.existsSync(filePath)) return res.status(404).send('File not found.');
@@ -348,8 +366,9 @@ app.get('/view-file/:filename', (req, res) => {
     fs.createReadStream(filePath).pipe(res);
 });
 
-
-//  add project route (for admin only)
+// ═══════════════════════════════════════════════════
+//  ADD PROJECT ROUTE (admin only)
+// ═══════════════════════════════════════════════════
 app.post('/add-project', (req, res) => {
   const { projectName, subsystem, mission } = req.body;
 
@@ -371,7 +390,10 @@ app.post('/add-project', (req, res) => {
   );
 });
 
-//management routes (for admin only)
+// ═══════════════════════════════════════════════════
+//  USER MANAGEMENT ROUTES (admin only)
+// ═══════════════════════════════════════════════════
+
 // Get all users
 app.get('/get-users', (req, res) => {
     db.query(
@@ -383,7 +405,7 @@ app.get('/get-users', (req, res) => {
     );
 });
 
-// add user
+// Add new user
 app.post('/add-user', (req, res) => {
     const { username, password, role } = req.body;
 
@@ -406,7 +428,7 @@ app.post('/add-user', (req, res) => {
     );
 });
 
-//edit user
+// Edit user
 app.put('/edit-user/:userId', (req, res) => {
     const userId = req.params.userId;
     const { username, password, role } = req.body;
@@ -437,7 +459,7 @@ app.put('/edit-user/:userId', (req, res) => {
     }
 });
 
-//delete user
+// Delete user
 app.delete('/delete-user/:userId', (req, res) => {
     const userId = req.params.userId;
     db.query('DELETE FROM users WHERE userId = ?', [userId], (err) => {
@@ -446,7 +468,7 @@ app.delete('/delete-user/:userId', (req, res) => {
     });
 });
 
-// start server
+// ── START SERVER ──────────────────────────────────
 app.listen(process.env.PORT || 3000,'0.0.0.0',() => {
     console.log('');
     console.log('Server started: http://localhost:3000');
